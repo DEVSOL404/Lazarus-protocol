@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Lazarus · Dashboard</title>
+  <meta name="theme-color" content="#000000" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/sol.css" />
+</head>
+<body>
+
+  <!-- ══ ONBOARDING ══════════════════════════════════════════════════ -->
+  <div id="onb" class="onb">
+    <div class="onb-top">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <span>Lazarus</span>
+      </div>
+      <div class="onb-progress">
+        <span id="onb-step-label">STEP 01 / 05</span>
+        <div class="onb-steps" id="onb-step-dots"></div>
+      </div>
+      <div class="onb-skips">
+        <a href="demo.html" class="onb-skip">
+          <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+          <span>Watch demo</span>
+        </a>
+        <button class="onb-skip" id="onb-skip-demo" type="button">
+          <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span>Skip · explore demo</span>
+        </button>
+      </div>
+    </div>
+    <div class="onb-main" id="onb-main"></div>
+  </div>
+
+  <!-- ══ APP SHELL ══════════════════════════════════════════════════ -->
+  <div class="shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span>Lazarus</span>
+        </div>
+        <button class="sb-collapse" id="sb-collapse" aria-label="Collapse sidebar">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="sb-section"><span>My Protection</span></div>
+
+        <button class="sb-item active" data-page="dashboard">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+          <span class="sb-item-label">Dashboard</span>
+        </button>
+        <button class="sb-item" data-page="heartbeat">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l3-9 4 18 3-9h5"/></svg>
+          <span class="sb-item-label">Heartbeat</span>
+        </button>
+        <button class="sb-item" data-page="roles">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2M16 3a4 4 0 010 8M21 21v-2a4 4 0 00-3-3.87"/></svg>
+          <span class="sb-item-label">Roles</span>
+        </button>
+        <button class="sb-item" data-page="petitions">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6M9 13h6M9 17h6"/></svg>
+          <span class="sb-item-label">Petitions</span>
+          <span class="sb-item-badge" id="badge-petitions" style="display:none">0</span>
+        </button>
+        <button class="sb-item" data-page="instructions">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          <span class="sb-item-label">Instructions</span>
+        </button>
+        <div class="sb-section"><span>My Duties</span></div>
+
+        <button class="sb-item" data-page="inbox">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+          <span class="sb-item-label">Inbox</span>
+          <span class="sb-item-badge red" id="badge-inbox" style="display:none">0</span>
+        </button>
+        <button class="sb-item" data-page="network">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="5" r="2"/><circle cx="20" cy="5" r="2"/><circle cx="4" cy="19" r="2"/><circle cx="20" cy="19" r="2"/><path d="M6 6l3.5 3.5M18 6l-3.5 3.5M6 18l3.5-3.5M18 18l-3.5-3.5"/></svg>
+          <span class="sb-item-label">People I'm watching over</span>
+          <span class="sb-item-badge" id="badge-network" style="display:none">0</span>
+        </button>
+
+        <div class="sb-section"><span>Protocol</span></div>
+        <button class="sb-item" data-page="settings">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.36.24.8.4 1.28.51H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          <span class="sb-item-label">Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="user-pill">
+          <div class="user-av"></div>
+          <div class="user-info">
+            <div class="user-name">You</div>
+            <div class="user-addr mono">0x742d…Bf3f</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <h1 id="topbar-title">Dashboard</h1>
+        <span class="tag"><span class="tag-dot"></span>PROTECTED</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="chain-picker" id="chain-picker" title="Active chain">
+          <button class="chain-picker-btn" id="chain-picker-btn">
+            <span class="chain-dot"></span>
+            <span class="chain-label" id="chain-label">·</span>
+            <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="chain-picker-menu" id="chain-picker-menu"></div>
+        </div>
+        <div class="balance-pill" id="wallet-balance" title="Wallet balance" style="display:none"></div>
+        <button class="duress-btn" id="duress-btn" title="Signal duress. Requires 2 Watchers to clear">DURESS</button>
+        <a href="demo.html" class="trailer-btn" title="Watch the Lazarus 90-second walkthrough">
+          <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+          <span>Demo</span>
+        </a>
+        <a href="docs.html" class="trailer-btn" title="Documentation">
+          <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6M9 13h6M9 17h6"/></svg>
+          <span>Docs</span>
+        </a>
+        <button class="search" id="cmdk-btn" aria-label="Command palette">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>Search or run a command</span>
+          <kbd>⌘K</kbd>
+        </button>
+        <button class="icon-btn" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="badge"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <div class="content-inner">
+
+        <!-- ═══ DASHBOARD ══════════════════════════════════════════════ -->
+        <section class="page active" id="page-dashboard">
+          <div class="hero-score">
+            <div class="score-ring-wrap">
+              <svg class="score-ring" viewBox="0 0 220 220">
+                <circle class="score-ring-bg" cx="110" cy="110" r="95"/>
+                <circle class="score-ring-fill" id="score-fill" cx="110" cy="110" r="95"/>
+              </svg>
+              <div class="score-ring-center">
+                <div class="score-ring-value" id="score-val">94</div>
+                <div class="score-ring-label">Protection Score</div>
+              </div>
+            </div>
+
+            <div class="hero-score-meta">
+              <h2 class="hs-head" id="hs-head">Quiet. Alive. Covered.</h2>
+              <p class="hs-sub" id="hs-sub">Your wallet is breathing normally. Your role network is watching. Nothing is about to happen, and that's the point.</p>
+
+              <div class="hs-stats">
+                <div class="hs-stat"><div class="hs-stat-v mono" id="stat-wallet">0x742d…Bf3f</div><div class="hs-stat-l">Wallet</div></div>
+                <div class="hs-stat"><div class="hs-stat-v mono" id="stat-roles">4</div><div class="hs-stat-l">Roles active</div></div>
+                <div class="hs-stat"><div class="hs-stat-v mono" id="stat-last">17m ago</div><div class="hs-stat-l">Last signal</div></div>
+              </div>
+
+              <div style="display:flex; gap: var(--s-2); margin-top: var(--s-3); flex-wrap: wrap">
+                <button class="btn btn-primary btn-sm" id="demo-heartbeat">Record activity</button>
+                <button class="btn btn-ghost btn-sm" id="demo-silence">Simulate silence</button>
+                <button class="btn btn-ghost btn-sm" id="demo-resurrect">Resurrect</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">Role network</div>
+                <button class="panel-action" onclick="document.querySelector('[data-page=roles]').click()">Manage →</button>
+              </div>
+              <div class="role-list" id="dash-roles"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">Open petitions</div>
+                <button class="panel-action" onclick="document.querySelector('[data-page=petitions]').click()">All →</button>
+              </div>
+              <div class="petition-list" id="dash-petitions"></div>
+            </div>
+          </div>
+
+          <!-- Why is the score what it is? Every signal that contributes. -->
+          <div class="panel" id="signals-panel" style="margin-bottom: var(--s-4)">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Why your score is <span id="signals-score">·</span></div>
+                <p class="muted" style="font-size:0.82rem; margin-top:4px">Every signal feeding your Protection Score. Green = healthy. Amber = aging. Red = concerning.</p>
+              </div>
+              <span class="mono" style="font-size:0.72rem;color:var(--text-3);letter-spacing:0.15em">LIVE DECOMPOSITION</span>
+            </div>
+            <div class="signals-list" id="signals-list"></div>
+          </div>
+
+          <!-- Safety self-audit. Your own security posture. -->
+          <div class="panel" id="safety-panel" style="margin-bottom: var(--s-4)">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Your safety posture <span class="safety-score-pill" id="safety-score-pill">·</span></div>
+                <p class="muted" style="font-size:0.82rem; margin-top:4px">Kidnap-resistant setups need diverse Watchers, an armed duress drill, and deep Confirmer benches. Here's where you stand.</p>
+              </div>
+              <button class="panel-action" id="safety-drill-btn">Run duress drill →</button>
+            </div>
+            <div class="safety-list" id="safety-list"></div>
+          </div>
+
+          <!-- Wallet activity. Actual outgoing txs from the connected wallet.
+               THIS is what proves you're alive: signed-now outgoing activity. -->
+          <div class="panel" id="wallet-activity-panel" style="margin-bottom: var(--s-4)">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Your wallet activity <span class="muted" style="font-size:0.78rem; font-weight:400; margin-left:6px">· proof you're alive</span></div>
+                <p class="muted" style="font-size:0.82rem; margin-top:4px">Outgoing transactions you signed. Receiving funds doesn't count. A sleeping wallet can still receive.</p>
+              </div>
+              <button class="panel-action" id="wa-refresh" title="Refresh">↻ Refresh</button>
+            </div>
+            <div class="wallet-activity-list" id="wallet-activity-list">
+              <div class="empty" style="padding: var(--s-5) 0">
+                <div class="empty-desc" style="font-size: 0.85rem">Connect your wallet to see your activity here.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" id="activity-panel" style="margin-bottom: var(--s-4)">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Lazarus contract events</div>
+                <p class="muted" style="font-size:0.82rem; margin-top:4px">Transactions you signed against the Lazarus contract specifically. Each one is a confirmed heartbeat.</p>
+              </div>
+              <span class="mono" style="font-size:0.72rem;color:var(--text-3);letter-spacing:0.15em" id="activity-sub">CONNECT TO WATCH</span>
+            </div>
+            <div class="activity-feed" id="activity-feed">
+              <div class="empty" style="padding: var(--s-5) 0">
+                <div class="empty-desc" style="font-size: 0.85rem">Lazarus contract transactions will stream here the moment you sign them.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Invariants in effect</div>
+              <span class="mono" style="font-size:0.72rem;color:var(--text-3);letter-spacing:0.15em">CONTRACT-ENFORCED</span>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--s-3)">
+              <div style="padding: var(--s-3); font-size: 0.88rem; color: var(--text-2)"><span class="accent">✓</span> Normal transactions never intercepted</div>
+              <div style="padding: var(--s-3); font-size: 0.88rem; color: var(--text-2)"><span class="accent">✓</span> Time alone cannot trigger a release</div>
+              <div style="padding: var(--s-3); font-size: 0.88rem; color: var(--text-2)"><span class="accent">✓</span> Confirmers cannot receive funds they voted on</div>
+              <div style="padding: var(--s-3); font-size: 0.88rem; color: var(--text-2)"><span class="accent">✓</span> Two Watcher vetoes halt any petition</div>
+              <div style="padding: var(--s-3); font-size: 0.88rem; color: var(--text-2)"><span class="accent">✓</span> Death-fee capped at $2,500 flat</div>
+              <div style="padding: var(--s-3); font-size: 0.88rem; color: var(--text-2)"><span class="accent">✓</span> You can cancel any pending petition instantly</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══ HEARTBEAT ═════════════════════════════════════════════ -->
+        <section class="page" id="page-heartbeat">
+          <div class="page-head">
+            <div><h2>Heartbeat</h2><p>What counts as you being alive, what doesn't, and how to stay covered while you're off-grid on purpose.</p></div>
+          </div>
+
+          <!-- The most important explainer in the whole product:
+               what does and does NOT count as "you, alive, signing things." -->
+          <div class="panel" style="margin-bottom: var(--s-4)">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">What counts as you being alive</div>
+                <p class="muted" style="font-size:0.82rem; margin-top:4px">A sleeping wallet can still receive money, get airdrops, and execute pre-signed transactions. None of those prove you're alive. Only deliberate, signed-now activity does.</p>
+              </div>
+            </div>
+            <div class="criteria-list">
+              <div class="criteria-item yes">
+                <span class="criteria-mark">✓</span>
+                <div>
+                  <div class="criteria-title">Outgoing transactions you sign</div>
+                  <div class="criteria-desc">Sending ETH, swapping tokens, calling any contract method. Anything that requires your signature in real time.</div>
+                </div>
+              </div>
+              <div class="criteria-item yes">
+                <span class="criteria-mark">✓</span>
+                <div>
+                  <div class="criteria-title">Direct heartbeat clicks</div>
+                  <div class="criteria-desc">"Record activity" on the dashboard signs a one-line tx that just says "I'm here." Costs only gas.</div>
+                </div>
+              </div>
+              <div class="criteria-item yes">
+                <span class="criteria-mark">✓</span>
+                <div>
+                  <div class="criteria-title">Lazarus actions</div>
+                  <div class="criteria-desc">Granting a role, setting a Silence Window, configuring your baseline, accepting an invite. Every signed Lazarus interaction is a heartbeat.</div>
+                </div>
+              </div>
+              <div class="criteria-item yes">
+                <span class="criteria-mark">✓</span>
+                <div>
+                  <div class="criteria-title">Mobile companion pulse <span class="muted" style="font-size:0.72rem; font-weight:400">(coming)</span></div>
+                  <div class="criteria-desc">Biometric-attested check-in from the Lazarus mobile app. Doesn't cost gas.</div>
+                </div>
+              </div>
+              <div class="criteria-item no">
+                <span class="criteria-mark">×</span>
+                <div>
+                  <div class="criteria-title">Receiving funds</div>
+                  <div class="criteria-desc">Anyone can send ETH or tokens to your address. That's their action, not yours. Doesn't count.</div>
+                </div>
+              </div>
+              <div class="criteria-item no">
+                <span class="criteria-mark">×</span>
+                <div>
+                  <div class="criteria-title">Pre-signed or scheduled transactions</div>
+                  <div class="criteria-desc">A timelock unlock or a pre-signed swap broadcast by someone else doesn't prove you're alive. You signed it weeks ago.</div>
+                </div>
+              </div>
+              <div class="criteria-item no">
+                <span class="criteria-mark">×</span>
+                <div>
+                  <div class="criteria-title">Airdrops, MEV, automated callbacks</div>
+                  <div class="criteria-desc">Bots claiming airdrops on your behalf, contract-to-contract callbacks, distributor sweeps. None of these involve you signing anything.</div>
+                </div>
+              </div>
+              <div class="criteria-item no">
+                <span class="criteria-mark">×</span>
+                <div>
+                  <div class="criteria-title">Reverted transactions</div>
+                  <div class="criteria-desc">A failed tx still has your signature, but if it didn't execute, it's not counted as a confirmed action.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom: var(--s-4)">
+            <div class="panel-head">
+              <div class="panel-title">Silence Window</div>
+              <span class="mono" style="font-size:0.72rem;color:var(--text-3)">PAUSES ESCALATION</span>
+            </div>
+            <div class="silence-modes" id="sw-modes">
+              <button class="silence-mode" data-mode="Travel">
+                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.2.6-.6.5-1.1z"/></svg>
+                <div class="silence-mode-name">Travel</div>
+                <div class="silence-mode-desc">Expected return by a specific date.</div>
+              </button>
+              <button class="silence-mode" data-mode="Medical">
+                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5a7 7 0 100-14 7 7 0 000 14zM3.5 10.5l14 14"/></svg>
+                <div class="silence-mode-name">Medical</div>
+                <div class="silence-mode-desc">Minimal activity, Council on standby.</div>
+              </button>
+              <button class="silence-mode" data-mode="Legal hold">
+                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-4V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/></svg>
+                <div class="silence-mode-name">Legal hold</div>
+                <div class="silence-mode-desc">Everything paused, no escalation.</div>
+              </button>
+              <button class="silence-mode" data-mode="Stealth">
+                <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                <div class="silence-mode-name">Stealth</div>
+                <div class="silence-mode-desc">Deliberately dark. Confirmers only.</div>
+              </button>
+            </div>
+            <div id="sw-configure" style="display:none; padding-top: var(--s-3); border-top: 1px solid var(--line); margin-top: var(--s-3)">
+              <div style="display:grid; grid-template-columns: 1fr 2fr; gap: var(--s-3); margin-bottom: var(--s-3)">
+                <div>
+                  <label class="mono-label" style="margin-bottom: var(--s-2); display:block">RETURN DATE</label>
+                  <input type="date" class="field" id="sw-until" />
+                </div>
+                <div>
+                  <label class="mono-label" style="margin-bottom: var(--s-2); display:block">NOTE TO CONFIRMERS (OPTIONAL)</label>
+                  <input class="field" id="sw-note" placeholder="Off the grid at a retreat. Back on the 30th." />
+                </div>
+              </div>
+              <div style="display:flex; gap: var(--s-2); flex-wrap: wrap">
+                <button class="btn btn-primary" id="sw-save">Set Silence Window</button>
+                <button class="btn btn-ghost btn-sm" id="sw-clear">Clear active window</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Baseline</div>
+              <button class="btn btn-primary btn-sm" id="hb-save">Save baseline</button>
+            </div>
+            <p class="muted" style="font-size: 0.88rem; margin-bottom: var(--s-4)">Quiet-baseline days before any escalation begins. Time alone can never drive your Protection Score below 40.</p>
+            <div class="slider-wrap">
+              <div class="slider-val"><span id="hb-val">30</span><span class="slider-unit">days</span></div>
+              <input type="range" min="7" max="90" value="30" id="hb-slider" />
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══ ROLES ═════════════════════════════════════════════════ -->
+        <section class="page" id="page-roles">
+          <div class="page-head">
+            <div><h2>Roles</h2><p>Invite your Confirmers, Custodians, and Watchers. Each receives a link they accept to join your protection.</p></div>
+          </div>
+          <div id="roles-wrap"></div>
+        </section>
+
+        <!-- ═══ PETITIONS ════════════════════════════════════════════ -->
+        <section class="page" id="page-petitions"><div class="content-wrap"></div></section>
+
+        <!-- ═══ INSTRUCTIONS ═════════════════════════════════════════ -->
+        <section class="page" id="page-instructions"><div class="content-wrap"></div></section>
+
+        <!-- ═══ SETTINGS ═════════════════════════════════════════════ -->
+        <section class="page" id="page-settings"><div class="content-wrap"></div></section>
+
+        <!-- ═══ INBOX (Duties) ══════════════════════════════════════ -->
+        <section class="page" id="page-inbox"><div class="content-wrap"></div></section>
+
+        <!-- ═══ NETWORK (People I'm watching over) ══════════════════ -->
+        <section class="page" id="page-network"><div class="content-wrap"></div></section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ MOBILE SIDEBAR DRAWER OVERLAY ══════════════════════════════ -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <!-- ══ COMMAND PALETTE ══════════════════════════════════════════════ -->
+  <div class="palette-overlay" id="palette-overlay">
+    <div class="palette">
+      <input class="palette-input" id="palette-input" placeholder="Search or run a command…" autocomplete="off" />
+      <div class="palette-list" id="palette-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL ════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <!-- ══ TOASTS ═══════════════════════════════════════════════════════ -->
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+  <script src="js/contract.js"></script>
+  <script src="js/activity.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/sol.js"></script>
+</body>
+</html>

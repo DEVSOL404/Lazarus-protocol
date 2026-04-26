@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Lazarus Protocol · Docs</title>
+  <meta name="description" content="Complete documentation for Lazarus Protocol. How the continuity layer works, roles, petition lifecycle, security guarantees, and the four invariants." />
+  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Lazarus Protocol" />
+  <meta property="og:title" content="Lazarus Protocol · Docs" />
+  <meta property="og:description" content="How Lazarus works: roles, the petition lifecycle, invariants, security guarantees." />
+  <meta property="og:image" content="og.png" />
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23a78bfa' opacity='0.18'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23a78bfa'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%23000'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/sol.css" />
+
+  <style>
+    /* ═══ DOCS LAYOUT ══════════════════════════════════════════════ */
+    body { background: var(--deep, #06060f); color: var(--text, #f5f5f7); font-family: 'Inter', system-ui, sans-serif; }
+
+    .docs-shell {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 0;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* Top nav */
+    .docs-top {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(6,6,15,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .docs-top-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .docs-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
+      color: var(--text, #f5f5f7);
+      text-decoration: none;
+    }
+    .docs-brand-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #a78bfa;
+      box-shadow: 0 0 10px rgba(167,139,250,0.6);
+    }
+    .docs-top-links { display: flex; gap: 10px; align-items: center; }
+    .docs-top-link {
+      font-size: 0.82rem;
+      color: var(--text-2, #c4c4cf);
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+    .docs-top-link:hover { color: var(--text, #f5f5f7); border-color: rgba(255,255,255,0.12); }
+    .docs-top-link.primary {
+      background: #8b5cf6;
+      color: #fff;
+      border: 0;
+    }
+    .docs-top-link.primary:hover { background: #7c3aed; }
+
+    /* TOC */
+    .docs-toc {
+      position: sticky;
+      top: 72px;
+      align-self: start;
+      height: calc(100vh - 72px);
+      overflow-y: auto;
+      padding: 40px 24px 40px 0;
+      border-right: 1px solid rgba(255,255,255,0.04);
+    }
+    .docs-toc-head {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem;
+      color: var(--text-3, #6b6b74);
+      letter-spacing: 0.18em;
+      margin-bottom: 14px;
+    }
+    .docs-toc ul { list-style: none; padding: 0; margin: 0; }
+    .docs-toc > ul > li { margin-bottom: 4px; }
+    .docs-toc a {
+      display: block;
+      padding: 6px 10px;
+      font-size: 0.86rem;
+      color: var(--text-2, #c4c4cf);
+      text-decoration: none;
+      border-radius: 6px;
+      border-left: 2px solid transparent;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+    .docs-toc a:hover { color: var(--text, #f5f5f7); background: rgba(255,255,255,0.03); }
+    .docs-toc a.active {
+      color: #a78bfa;
+      border-left-color: #a78bfa;
+      background: rgba(167,139,250,0.08);
+    }
+
+    /* Main content */
+    .docs-main {
+      padding: 48px 0 96px 48px;
+      min-width: 0;
+    }
+    .docs-main h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 0 0 16px;
+      line-height: 1.1;
+    }
+    .docs-main h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 64px 0 20px;
+      scroll-margin-top: 96px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 40px;
+    }
+    .docs-main h2:first-of-type { border-top: 0; padding-top: 0; margin-top: 48px; }
+    .docs-main h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 32px 0 12px;
+      color: var(--text, #f5f5f7);
+    }
+    .docs-main p {
+      color: var(--text-2, #c4c4cf);
+      font-size: 1rem;
+      line-height: 1.72;
+      margin: 0 0 16px;
+    }
+    .docs-main ul, .docs-main ol {
+      color: var(--text-2, #c4c4cf);
+      font-size: 1rem;
+      line-height: 1.72;
+      padding-left: 22px;
+      margin: 0 0 20px;
+    }
+    .docs-main li { margin-bottom: 8px; }
+    .docs-main strong { color: var(--text, #f5f5f7); font-weight: 600; }
+    .docs-main a:not(.cta):not(.docs-top-link) {
+      color: #a78bfa;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(167,139,250,0.3);
+    }
+    .docs-main a:not(.cta):not(.docs-top-link):hover { border-bottom-color: #a78bfa; }
+
+    .lede {
+      font-size: 1.15rem;
+      line-height: 1.65;
+      color: var(--text-2, #c4c4cf);
+      max-width: 680px;
+      margin-bottom: 40px;
+    }
+
+    /* Callouts */
+    .callout {
+      border-left: 2px solid #8b5cf6;
+      background: rgba(139,92,246,0.06);
+      padding: 16px 20px;
+      border-radius: 0 10px 10px 0;
+      margin: 20px 0;
+    }
+    .callout.warn { border-left-color: #f59e0b; background: rgba(245,158,11,0.05); }
+    .callout.danger { border-left-color: #ef4444; background: rgba(239,68,68,0.05); }
+    .callout-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      color: #a78bfa;
+      margin-bottom: 6px;
+    }
+    .callout.warn .callout-label { color: #f59e0b; }
+    .callout.danger .callout-label { color: #ef4444; }
+    .callout p:last-child { margin-bottom: 0; }
+
+    /* Code */
+    .docs-main code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86em;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 2px 7px;
+      border-radius: 5px;
+      color: #e9d5ff;
+    }
+    .docs-main pre {
+      background: #0a0a14;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 20px 0;
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+    .docs-main pre code {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      color: var(--text-2, #c4c4cf);
+      font-size: inherit;
+    }
+
+    /* Tables */
+    .docs-main table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.9rem;
+    }
+    .docs-main th, .docs-main td {
+      text-align: left;
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .docs-main th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: var(--text-3, #6b6b74);
+    }
+    .docs-main td { color: var(--text-2, #c4c4cf); }
+    .docs-main td.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--text, #f5f5f7); }
+
+    /* Role cards */
+    .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
+    .role-card {
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+    }
+    .role-card h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .role-card h4 .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .role-card.confirmer .dot { background: #34d399; }
+    .role-card.custodian .dot { background: #fbbf24; }
+    .role-card.watcher .dot { background: #a78bfa; }
+    .role-card p { font-size: 0.88rem; color: var(--text-2, #c4c4cf); margin: 0; line-height: 1.55; }
+
+    /* Step list */
+    .step-list { list-style: none; padding: 0; counter-reset: step; }
+    .step-list li {
+      counter-increment: step;
+      padding: 14px 18px 14px 52px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.01);
+      position: relative;
+    }
+    .step-list li::before {
+      content: counter(step, decimal-leading-zero);
+      position: absolute;
+      left: 16px;
+      top: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #a78bfa;
+      letter-spacing: 0.1em;
+    }
+
+    /* Invariant badges */
+    .invariants-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .invariant {
+      padding: 18px;
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(139,92,246,0));
+    }
+    .invariant strong { color: var(--text, #f5f5f7); display: block; margin-bottom: 6px; font-size: 0.95rem; }
+    .invariant span { font-size: 0.85rem; color: var(--text-2, #c4c4cf); line-height: 1.55; }
+
+    /* Footer */
+    .docs-foot {
+      padding: 48px 0 24px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      margin-top: 96px;
+      color: var(--text-3, #6b6b74);
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Mobile */
+    @media (max-width: 860px) {
+      .docs-shell { grid-template-columns: 1fr; padding: 0 20px; }
+      .docs-toc {
+        position: static;
+        height: auto;
+        padding: 24px 0;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .docs-main { padding: 24px 0 72px 0; }
+      .docs-main h1 { font-size: 2.1rem; }
+      .docs-main h2 { font-size: 1.45rem; margin-top: 48px; padding-top: 32px; }
+      .role-grid { grid-template-columns: 1fr; }
+      .docs-top-inner { padding: 12px 20px; }
+      .docs-top-link span.hide-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="docs-top">
+    <div class="docs-top-inner">
+      <a href="index.html" class="docs-brand">
+        <span class="docs-brand-dot"></span>
+        <span>LAZARUS · DOCS</span>
+      </a>
+      <div class="docs-top-links">
+        <a href="index.html" class="docs-top-link"><span class="hide-mobile">Landing</span><span style="display:none" class="show-mobile">←</span></a>
+        <a href="app.html" class="docs-top-link primary">Open app</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="docs-shell">
+
+    <!-- TOC -->
+    <aside class="docs-toc">
+      <div class="docs-toc-head">ON THIS PAGE</div>
+      <ul>
+        <li><a href="#intro">What is Lazarus</a></li>
+        <li><a href="#invariants">The four invariants</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#roles">Roles</a></li>
+        <li><a href="#score">Protection Score</a></li>
+        <li><a href="#petition">Petition lifecycle</a></li>
+        <li><a href="#silence">Silence Windows</a></li>
+        <li><a href="#duress">Duress protocol</a></li>
+        <li><a href="#security">Security guarantees</a></li>
+        <li><a href="#fees">Fees &amp; economics</a></li>
+        <li><a href="#multichain">Multichain</a></li>
+        <li><a href="#api">Contract reference</a></li>
+        <li><a href="#glossary">Glossary</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main -->
+    <main class="docs-main">
+
+      <h1>Lazarus Protocol</h1>
+      <p class="lede">A crypto continuity layer. Your wallet stays yours. When your on-chain heartbeat stops, a network of people you trust takes the right action. Transparently, on-chain, and with no ability to steal from you.</p>
+
+      <section id="intro">
+        <h2>What is Lazarus</h2>
+        <p>Every year, billions in crypto go unrecoverable. Lost seed phrases. Owners who die or disappear. Families locked out of the assets their partner spent a lifetime building. Existing "recovery" solutions force you to hand custody to someone else or give up self-custody entirely.</p>
+        <p>Lazarus is a different model: an <strong>insurance layer on top of the wallet you already use</strong>. It reads your public on-chain activity as a heartbeat. If that heartbeat stops for longer than your chosen baseline, a protocol of people you designated. A <em>Council</em>. Begins a transparent, contract-enforced process of escalation. You can always resurrect. Confirmers can never steal. Normal transactions are never intercepted.</p>
+        <div class="callout">
+          <div class="callout-label">IN ONE SENTENCE</div>
+          <p>Lazarus watches your wallet for silence, gives the people you trust a verifiable way to respond when something's wrong, and gives you the guaranteed ability to return and cancel everything.</p>
+        </div>
+      </section>
+
+      <section id="invariants">
+        <h2>The four invariants</h2>
+        <p>These are enforced at the contract level. Not in a terms-of-service document. If any of these ever fails, Lazarus fails.</p>
+
+        <div class="invariants-grid">
+          <div class="invariant">
+            <strong>1 · Normal transactions are never intercepted</strong>
+            <span>Lazarus only reads public on-chain data. Your wallet is untouched. Your existing transactions route exactly as they always have.</span>
+          </div>
+          <div class="invariant">
+            <strong>2 · Confirmers earn nothing from petitions they vote on</strong>
+            <span>Enforced in <code>executePetition()</code>. A Confirmer who voted on a petition is excluded from receiving its funds. Byte-for-byte, at the contract level.</span>
+          </div>
+          <div class="invariant">
+            <strong>3 · Time alone never triggers a release</strong>
+            <span>Even a Protection Score of zero is not sufficient. A Custodian must file a petition, Confirmers must vote, and a 72-hour challenge window must elapse.</span>
+          </div>
+          <div class="invariant">
+            <strong>4 · The owner can always resurrect</strong>
+            <span>One <code>recordActivity()</code> call from the owner cancels every open petition and restores the Protection Score. There is no window where the owner is locked out.</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="how-it-works">
+        <h2>How it works</h2>
+        <ol class="step-list">
+          <li><strong>You register a contract</strong>. One Lazarus contract per wallet owner. You set your baseline days (7–180) and assign roles.</li>
+          <li><strong>An indexer watches your wallet</strong>. Any on-chain activity (incoming, outgoing, signatures) counts as a heartbeat and pings <code>recordActivity()</code>.</li>
+          <li><strong>If your wallet goes silent beyond the baseline</strong>, your Protection Score drops. At 70 it enters a warning state. Below 70, a Custodian can file a petition.</li>
+          <li><strong>Confirmers verify and vote (blind commit-reveal)</strong>. Two approvals are required, revealed only after the reveal window, readable only during and after the 72-hour challenge window.</li>
+          <li><strong>You can resurrect at any point</strong>. One signed tx cancels everything and restores your score.</li>
+          <li><strong>If you don't</strong>, funds release to the specified Custodian minus a 0.2% protocol fee. The Confirmer who voted is excluded from receiving any of it.</li>
+        </ol>
+      </section>
+
+      <section id="roles">
+        <h2>Roles</h2>
+        <p>Three distinct roles. Each is intentionally narrow. No one can play two simultaneously. The contract enforces it.</p>
+
+        <div class="role-grid">
+          <div class="role-card confirmer">
+            <h4><span class="dot"></span>Confirmer</h4>
+            <p>Verifies a petition is legitimate via blind commit-reveal voting. <strong>Cannot receive funds</strong> from any petition they voted on. Two approvals needed to advance.</p>
+          </div>
+          <div class="role-card custodian">
+            <h4><span class="dot"></span>Custodian</h4>
+            <p>Files petitions and receives funds on approval. <strong>Cannot vote.</strong> Cannot simultaneously hold the Confirmer role.</p>
+          </div>
+          <div class="role-card watcher">
+            <h4><span class="dot"></span>Watcher</h4>
+            <p>Neutral observer with veto power. <strong>Two Watcher vetoes halt any petition permanently.</strong> Cannot receive funds.</p>
+          </div>
+        </div>
+
+        <h3>Role separation is contract-level</h3>
+        <p>In <code>grantRole()</code>, assigning a Confirmer role to someone who already holds Custodian (or vice versa) reverts with <code>LAZ: role conflict</code>. This is the core anti-collusion mechanism. The one who votes can never be the one who profits.</p>
+
+        <h3>Invitations, not assignments</h3>
+        <p>You don't directly assign roles. You invite. An invite creates an <code>Invitation</code> with <code>InviteStatus.Pending</code>; the invitee must accept with their own signature. This prevents accidentally "assigning" someone to a role they didn't consent to, and gives the role-holder an on-chain record of their commitment.</p>
+      </section>
+
+      <section id="score">
+        <h2>Protection Score</h2>
+        <p>A number between 0 and 100 representing the health of your continuity posture. Returned by <code>protectionScore()</code> on the contract.</p>
+
+        <table>
+          <thead><tr><th>Score</th><th>State</th><th>What's possible</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">100</td><td>Healthy</td><td>Recent activity. Nothing escalates.</td></tr>
+            <tr><td class="mono">70–99</td><td>Quiet</td><td>Below baseline. Monitoring.</td></tr>
+            <tr><td class="mono">40–69</td><td>Warning</td><td>Custodians can file petitions.</td></tr>
+            <tr><td class="mono">20–39</td><td>Silent</td><td>Instruction timelock reduces.</td></tr>
+            <tr><td class="mono">0–19</td><td>Likely incapacitated</td><td>Full Incapacitation petitions allowed.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout warn">
+          <div class="callout-label">40 FLOOR INVARIANT</div>
+          <p>Time alone cannot drop your score below 40. Reaching scores below that requires confirmed external signals (escalation responses, role-network health) combined with silence. This is enforced in the contract's <code>vitalityScore()</code>.</p>
+        </div>
+      </section>
+
+      <section id="petition">
+        <h2>Petition lifecycle</h2>
+        <p>Every fund release goes through this six-phase process. There are no shortcuts and no override paths.</p>
+
+        <ol class="step-list">
+          <li><strong>File</strong>. A Custodian calls <code>filePetition(type, asset, amount, ipfs)</code>. Requires score ≤ 69 and at least two active Confirmers. Snapshots the Confirmer list so later role changes don't affect this petition.</li>
+          <li><strong>Commit phase</strong>. Each Confirmer submits a <code>commitmentHash = keccak256(approve, salt)</code> without revealing their vote. 48-hour window.</li>
+          <li><strong>Reveal phase</strong>. Confirmers reveal <code>(approve, salt)</code>. The contract verifies the hash matches. Anyone who didn't commit cannot reveal. 48-hour window.</li>
+          <li><strong>Challenge window</strong>. 72 hours where the owner can cancel (resurrect) or Watchers can veto. Vote counts become public.</li>
+          <li><strong>Execute</strong>. Any non-voting Custodian can call <code>executePetition()</code>. Requires ≥2 approvals and expired challenge window. Funds release minus the 0.2% fee.</li>
+          <li><strong>Terminal</strong>. The petition enters one of: <code>Executed</code>, <code>Cancelled</code>, <code>Vetoed</code>, <code>Rejected</code>, or <code>Expired</code>.</li>
+        </ol>
+
+        <h3>Why commit-reveal?</h3>
+        <p>Blind voting removes coordination pressure. A Confirmer doesn't know how others voted until after they've committed. This protects against social dynamics where one loud Confirmer's early "yes" cascades into a rubber-stamp. A real failure mode for naive voting systems.</p>
+
+        <h3>Petition types &amp; caps</h3>
+        <table>
+          <thead><tr><th>Type</th><th>Cap (% of balance)</th><th>Score required</th></tr></thead>
+          <tbody>
+            <tr><td>General Hardship</td><td class="mono">15%</td><td class="mono">≤ 69</td></tr>
+            <tr><td>Medical Emergency</td><td class="mono">40%</td><td class="mono">≤ 69</td></tr>
+            <tr><td>Legal Emergency</td><td class="mono">35%</td><td class="mono">≤ 69</td></tr>
+            <tr><td>Dependent Care</td><td class="mono">30%</td><td class="mono">≤ 69</td></tr>
+            <tr><td>Full Incapacitation</td><td class="mono">100%</td><td class="mono">≤ 19</td></tr>
+            <tr><td>Final Transition</td><td class="mono">100%</td><td class="mono">confirmed death</td></tr>
+          </tbody>
+        </table>
+        <p>Plus a <strong>25% aggregate cap</strong> across non-emergency releases in any rolling 90-day window.</p>
+      </section>
+
+      <section id="silence">
+        <h2>Silence Windows</h2>
+        <p>Going off-grid on purpose? A Silence Window tells the protocol to pause escalation. Your Protection Score reports a healthy 95 while the window is active, even if your wallet produces zero activity.</p>
+        <table>
+          <thead><tr><th>Mode</th><th>Typical use</th></tr></thead>
+          <tbody>
+            <tr><td>Travel</td><td>Trip with limited connectivity. Custodians see an expected return date.</td></tr>
+            <tr><td>Medical</td><td>Hospital stay. Custodians on standby but no auto-escalation.</td></tr>
+            <tr><td>Legal Hold</td><td>Litigation / investigation. Everything paused, nothing escalates.</td></tr>
+            <tr><td>Stealth</td><td>Deliberately dark for operational reasons. Confirmers only.</td></tr>
+            <tr><td>Personal Leave</td><td>Extended quiet by choice.</td></tr>
+          </tbody>
+        </table>
+        <p>Maximum window length: 1 year. The owner can clear the window at any time with <code>clearSilenceWindow()</code>. That doubles as a heartbeat.</p>
+      </section>
+
+      <section id="duress">
+        <h2>Duress protocol</h2>
+        <p>What if the attacker <em>is</em> the owner. Forced to sign? Lazarus includes a duress channel.</p>
+        <p><code>recordActivityUnderDuress()</code> looks like a normal heartbeat from outside. Internally it flips the <code>duressActive</code> flag, which locks the owner out of unilateral petition cancellations. While duress is active:</p>
+        <ul>
+          <li>The owner's <code>cancelPetition()</code> alone is rejected.</li>
+          <li>Clearing the duress flag requires <strong>two Watcher co-signatures</strong>, given out-of-band after they've verified the owner is safe.</li>
+          <li>External observers see nothing different. No public "under duress" signal that could escalate the situation.</li>
+        </ul>
+        <div class="callout danger">
+          <div class="callout-label">WHY THIS MATTERS</div>
+          <p>A wrench-attack scenario (someone forces you to sign) would otherwise mean a single signed transaction drains your protocol. The duress channel means the attacker can't <em>un</em>-lock without coordinated co-signatures from people physically separated from the owner.</p>
+        </div>
+      </section>
+
+      <section id="security">
+        <h2>Security guarantees</h2>
+        <ul>
+          <li><strong>Reentrancy-guarded</strong> on <code>executePetition()</code>. Releases are single-entry.</li>
+          <li><strong>No unbounded loops</strong> in release paths. Confirmer list is snapshotted at petition filing; later changes don't alter execution cost.</li>
+          <li><strong>Two-step ownership transfer</strong>. <code>initiateOwnershipTransfer</code> + <code>acceptOwnership</code>. No accidental single-sig ownership handover.</li>
+          <li><strong>No-Release Freeze</strong>. A one-way switch that permanently disables all Custodian releases. For owners who want the monitoring without the recovery path. After engagement, <em>nothing</em> releases funds except the owner's own signature.</li>
+          <li><strong>Death fee cap</strong>. $2,500 max via Chainlink oracle (fallback to flat rate if feed is stale). Prevents abusive escalation fees on large estates.</li>
+          <li><strong>Ownership separation enforced</strong>. In <code>grantRole()</code>, Confirmer ↔ Custodian conflicts revert.</li>
+          <li><strong>Expired petitions auto-state</strong>. Petitions that sit in any phase beyond their deadline become <code>Expired</code>, cannot execute retroactively.</li>
+        </ul>
+      </section>
+
+      <section id="fees">
+        <h2>Fees</h2>
+        <p>The only thing worth saying publicly about Lazarus's economics: <strong>you should never feel a fee while you're alive and active</strong>. Monitoring is free, forever. The only fee a user ever pays fires once, on the day the protocol actually protects them.</p>
+
+        <h3>What a user pays</h3>
+        <table>
+          <thead><tr><th>Event</th><th>Fee</th><th>When</th></tr></thead>
+          <tbody>
+            <tr><td>Monitoring</td><td class="mono">$0</td><td>Forever. No subscription, no setup, no monthly skim.</td></tr>
+            <tr><td>Emergency partial release</td><td class="mono">0.40%</td><td>Once, deducted from the released amount only.</td></tr>
+            <tr><td>Full incapacitation release</td><td class="mono">0.40%</td><td>Once, deducted from the released amount only.</td></tr>
+            <tr><td>Final transition (death-confirmed)</td><td class="mono">0.20%, capped at $2,500</td><td>Once. Cap protects large estates from disproportionate fees.</td></tr>
+          </tbody>
+        </table>
+        <p>That's it. There is no other path through which a normal user pays Lazarus a cent. Not on swaps, not on transfers, not on idle balances, not on any normal wallet activity.</p>
+
+        <h3>What Lazarus will never charge</h3>
+        <ul>
+          <li>Monthly subscriptions, "pro" tiers, or feature gates.</li>
+          <li>Setup or onboarding fees.</li>
+          <li>Fees on normal transactions. Your wallet's normal flow is never touched.</li>
+          <li>AUM management fees on idle balances.</li>
+          <li>Anything a user might notice as a recurring or visible charge.</li>
+        </ul>
+
+        <h3>How the protocol funds itself</h3>
+        <p>Briefly: through structurally separate revenue lines that don't touch user wallets. Release fees flow into a protocol-owned treasury that earns its own income. Platforms that integrate Lazarus pay licensing fees. Institutional clients buy custom coverage contracts. Confirmers and Watchers earn flat per-event stipends drawn from the treasury, never from the user's released amount.</p>
+        <p>The litmus test we hold ourselves to: if a normal person setting up Lazarus for their family would notice a fee, a tier, an upsell, or a commercial surface in their experience. It's wrong. <strong>Surface to user = $0.</strong></p>
+      </section>
+
+      <section id="multichain">
+        <h2>Multichain</h2>
+        <p>Lazarus is chain-agnostic. Each user's contract is deployed to the chain of their choice. The wallet you already use. Currently configured:</p>
+        <table>
+          <thead><tr><th>Chain</th><th>Chain ID</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Base Sepolia</td><td class="mono">84532</td><td>Primary testnet</td></tr>
+            <tr><td>Base</td><td class="mono">8453</td><td>Mainnet-ready</td></tr>
+            <tr><td>Optimism Sepolia</td><td class="mono">11155420</td><td>Supported</td></tr>
+            <tr><td>Arbitrum Sepolia</td><td class="mono">421614</td><td>Supported</td></tr>
+            <tr><td>Ethereum Sepolia</td><td class="mono">11155111</td><td>Supported</td></tr>
+          </tbody>
+        </table>
+        <p>The app's chain picker auto-detects your wallet's current network. Unsupported chains show as "coming soon". You can still explore the app in simulation mode.</p>
+        <p>Future expansion is a config addition, not a code rewrite: new chains are declared in <code>js/contract.js</code>'s <code>CHAINS</code> map.</p>
+      </section>
+
+      <section id="api">
+        <h2>Contract reference</h2>
+        <p>Core read methods:</p>
+        <pre><code>function owner() view returns (address)
+function protectionScore() view returns (uint256)
+function daysSinceActivity() view returns (uint256)
+function customBaselineDays() view returns (uint256)
+function activeConfirmers() view returns (address[])
+function activeCustodians() view returns (address[])
+function activeWatchers() view returns (address[])
+function petitionCount() view returns (uint256)
+function petitions(uint256) view returns (Petition)
+function noReleaseFreezeEngaged() view returns (bool)</code></pre>
+
+        <p>Core write methods:</p>
+        <pre><code>// Owner
+function recordActivity()
+function setBaselineDays(uint256)
+function setSilenceWindow(SilenceReason, uint256, string)
+function clearSilenceWindow()
+function inviteRole(address, Role, string) returns (uint256)
+function revokeRole(address)
+function cancelPetition(uint256)
+function engageNoReleaseFreeze()
+
+// Custodian
+function filePetition(PetitionType, address, uint256, string) returns (uint256)
+function executePetition(uint256)
+
+// Confirmer
+function commitVote(uint256, bytes32)
+function revealVote(uint256, bool, bytes32)
+
+// Watcher
+function watcherVeto(uint256)
+
+// Anyone
+function acceptInvite(uint256)
+function declineInvite(uint256)</code></pre>
+
+        <p>See <a href="https://github.com/">contracts/Lazarus.sol</a> for the full source (1,028 lines, 27 passing tests).</p>
+      </section>
+
+      <section id="glossary">
+        <h2>Glossary</h2>
+        <table>
+          <tbody>
+            <tr><td><strong>Baseline</strong></td><td>The number of days of wallet inactivity before your Protection Score starts dropping. User-configurable 7–180.</td></tr>
+            <tr><td><strong>Challenge Window</strong></td><td>The 72-hour window after a petition's reveal phase where the owner can cancel or Watchers can veto.</td></tr>
+            <tr><td><strong>Commit-Reveal</strong></td><td>Voting scheme where votes are hashed and submitted privately (commit), then revealed after the deadline. Prevents vote cascading.</td></tr>
+            <tr><td><strong>Council</strong></td><td>Informal name for the aggregate of Confirmers + Custodians + Watchers you've designated.</td></tr>
+            <tr><td><strong>Duress</strong></td><td>A state where the owner is being coerced. Entered via <code>recordActivityUnderDuress()</code>, exited only with two Watcher co-signatures.</td></tr>
+            <tr><td><strong>Heartbeat</strong></td><td>Any on-chain activity recorded on the contract's watched wallet. Keeps the score at 100.</td></tr>
+            <tr><td><strong>Lazarus Pool</strong></td><td>The protocol fee recipient. Set at deployment. Receives 0.2% of every release.</td></tr>
+            <tr><td><strong>Petition</strong></td><td>A Custodian-initiated request to release funds. Must complete the full lifecycle to execute.</td></tr>
+            <tr><td><strong>Protection Score</strong></td><td>0–100 value representing the health of your continuity posture. Public, read-only.</td></tr>
+            <tr><td><strong>Resurrection</strong></td><td>The owner's ability to cancel every open petition and restore the Protection Score with a single transaction.</td></tr>
+            <tr><td><strong>Silence Window</strong></td><td>An owner-declared period of inactivity that pauses escalation (Travel / Medical / Legal / Stealth / Personal Leave).</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="docs-foot">
+        <div>Lazarus Protocol · Documentation · v0.1</div>
+        <div><a href="index.html">Landing</a> · <a href="app.html">Open app</a> · <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // TOC active-link highlighting via IntersectionObserver
+    const sections = document.querySelectorAll('.docs-main section[id]');
+    const links = document.querySelectorAll('.docs-toc a');
+    const byId = new Map();
+    links.forEach(a => byId.set(a.getAttribute('href').slice(1), a));
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.classList.remove('active'));
+          byId.get(e.target.id)?.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+    sections.forEach(s => io.observe(s));
+
+    // Smooth scroll for TOC links
+    links.forEach(a => a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.pushState(null, '', '#' + id);
+      }
+    }));
+  </script>
+  <script src="js/sol.js"></script>
+</body>
+</html>

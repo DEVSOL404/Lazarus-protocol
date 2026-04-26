@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Lazarus · Crypto continuity insurance</title>
+  <meta name="description" content="An on-chain continuity layer for the wallets you already use. If the signal ever stops, the people you trust are already in motion. Not a new wallet. An insurance layer." />
+  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="author" content="Lazarus Protocol" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Lazarus Protocol" />
+  <meta property="og:title" content="Lazarus · Crypto continuity insurance" />
+  <meta property="og:description" content="Your crypto shouldn't be lost if life ever changes. An on-chain continuity layer for the wallets you already use. Built to protect the people you love." />
+  <meta property="og:image" content="og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Lazarus · Crypto continuity insurance" />
+  <meta name="twitter:description" content="Your crypto shouldn't be lost if life ever changes. Not a new wallet. An insurance layer for the one you already use." />
+  <meta name="twitter:image" content="og.png" />
+
+  <!-- Inline SVG favicon: the brand purple dot on black -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23a78bfa' opacity='0.18'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23a78bfa'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%23000'/%3E%3C/svg%3E" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Lazarus Protocol",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "description": "Crypto continuity insurance. An on-chain protection layer for the wallets you already use.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/marketing.css" />
+  <link rel="stylesheet" href="css/sol.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="scroll-progress" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"><span class="cursor-label"></span></div>
+
+  <!-- ══ NAV ══════════════════════════════════════════════════════════ -->
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a href="#" class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Lazarus</span>
+      </a>
+      <div class="nav-links">
+        <a href="#play">Try it</a>
+        <a href="#invite">Invite</a>
+        <a href="#petition">Petition</a>
+        <a href="#fees">Fees</a>
+        <a href="#security">Security</a>
+        <a href="docs.html">Docs</a>
+        <a href="#faq">FAQ</a>
+        <a href="demo.html" class="nav-trailer">
+          <svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+          Watch demo
+        </a>
+        <a href="app.html" class="btn btn-ghost btn-sm">Open app</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ PINNED 3D STAGE (scroll-driven) ═══════════════════════════════ -->
+  <div id="stage" aria-hidden="true"></div>
+
+  <main id="main" class="story">
+
+    <!-- ──────── HERO ──────── -->
+    <section class="act act-hero" data-act-id="1">
+      <div class="wrap">
+        <div class="act-grid">
+          <div class="col-wide-L">
+            <div class="tag tag-accent hero-eyebrow">
+              <span class="tag-dot"></span>
+              INSURANCE LAYER · NOT A NEW WALLET
+            </div>
+            <h1 class="hero-title">
+              <span><span class="hero-word">Your crypto</span></span>
+              <span><span class="hero-word">shouldn't <em>vanish</em></span></span>
+              <span><span class="hero-word">if life ever changes.</span></span>
+            </h1>
+            <p class="hero-lede">
+              An on-chain continuity layer for the wallets you already use.
+              If the signal ever stops, the people you trust are already in motion.
+            </p>
+            <div class="hero-ctas">
+              <a href="app.html" class="btn btn-primary btn-lg magnetic">
+                Start protection
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="demo.html" class="btn btn-ghost btn-lg hero-trailer">
+                <svg viewBox="0 0 24 24" width="14" height="14"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+                Watch demo · 90s
+              </a>
+              <a href="#play" class="hero-scroll-link">or try it below ↓</a>
+            </div>
+            <div class="hero-trust mono">
+              <span><span class="trust-dot"></span>Open source</span>
+              <span class="trust-sep">·</span>
+              <span>Base Sepolia</span>
+              <span class="trust-sep">·</span>
+              <span>No custody at signup</span>
+              <span class="trust-sep">·</span>
+              <span>Audit in progress</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-scroll-hint motion-only">
+          <span>SCROLL</span>
+          <span class="hero-scroll-hint-line"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── 1. PROTECTION SCORE PLAYGROUND ──────── -->
+    <section class="act lab" id="play" data-act-id="2">
+      <div class="wrap">
+        <div class="lab-head">
+          <div class="mono-label">01 · Play with it</div>
+          <h2>Move the slider.<br/>Watch what happens<br/>as <em>silence grows.</em></h2>
+          <p class="muted">Every day of silence nudges your Protection Score. Time alone can never drive it below 40. But here's what's happening at every level.</p>
+        </div>
+
+        <div class="lab-body">
+          <div class="lab-score">
+            <div class="lab-score-number" data-play-score>94</div>
+            <div class="lab-score-label" data-play-state>ACTIVE</div>
+            <div class="lab-score-status mono" data-play-status>All systems quiet. Nothing escalates.</div>
+          </div>
+
+          <div class="lab-controls">
+            <div class="lab-slider-row">
+              <span class="mono-label">DAYS SILENT</span>
+              <span class="mono accent" data-play-days>0</span>
+            </div>
+            <input type="range" id="play-slider" min="0" max="90" value="0" class="lab-slider" />
+            <div class="lab-slider-scale">
+              <span>0</span><span>7</span><span>30</span><span>60</span><span>90</span>
+            </div>
+
+            <div class="lab-ladder">
+              <div class="lab-rung" data-threshold="70"><div class="lab-rung-dot"></div><div><strong>70+</strong> · Normal operation</div></div>
+              <div class="lab-rung" data-threshold="50"><div class="lab-rung-dot"></div><div><strong>70→50</strong> · Escalation pings start. Watchers notified.</div></div>
+              <div class="lab-rung" data-threshold="40"><div class="lab-rung-dot"></div><div><strong>50→40</strong> · Emergency Petitions become fileable.</div></div>
+              <div class="lab-rung" data-threshold="0"><div class="lab-rung-dot"></div><div><strong>40 floor</strong> · Time alone cannot go lower. Evidence required.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── 2. INVITE COMPOSER ──────── -->
+    <section class="act lab" id="invite" data-act-id="3">
+      <div class="wrap">
+        <div class="lab-head">
+          <div class="mono-label">02 · Invite someone</div>
+          <h2>Anyone can<br/>ask you to <em>watch over them.</em></h2>
+          <p class="muted">Type a name. Pick a role. Generate a link that lands in their Inbox. They accept, the contract grants their role. Every wallet on Lazarus is both sides of this. Protected, and protecting someone.</p>
+        </div>
+
+        <div class="lab-body">
+          <div class="invite-form">
+            <div class="invite-field">
+              <label class="mono-label">NAME</label>
+              <input type="text" id="inv-demo-name" class="lab-input" placeholder="Maya Oyelaran" />
+            </div>
+            <div class="invite-field">
+              <label class="mono-label">WALLET OR ENS (OPTIONAL)</label>
+              <input type="text" id="inv-demo-addr" class="lab-input" placeholder="0x… or maya.eth · leave blank for open link" />
+            </div>
+            <div class="invite-field">
+              <label class="mono-label">ROLE</label>
+              <div class="invite-roles">
+                <button class="invite-role selected" data-role="Confirmer" data-role-tint="confirmer">
+                  <span class="ir-name">Confirmer</span>
+                  <span class="ir-desc">verifies</span>
+                </button>
+                <button class="invite-role" data-role="Custodian" data-role-tint="custodian">
+                  <span class="ir-name">Custodian</span>
+                  <span class="ir-desc">receives</span>
+                </button>
+                <button class="invite-role" data-role="Watcher" data-role-tint="watcher">
+                  <span class="ir-name">Watcher</span>
+                  <span class="ir-desc">witnesses</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="invite-output">
+            <div class="invite-result" id="inv-demo-result">
+              <div class="invite-result-empty">
+                <span class="mono-label">INVITATION LINK</span>
+                <div class="dim">Generate one to see it appear here.</div>
+              </div>
+            </div>
+            <button class="btn btn-primary magnetic" id="inv-demo-go">Generate invite link →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── 3. PETITION SIMULATOR ──────── -->
+    <section class="act lab" id="petition" data-act-id="4">
+      <div class="wrap">
+        <div class="lab-head">
+          <div class="mono-label">03 · Play a petition</div>
+          <h2>See a petition<br/>live through its <em>lifecycle.</em></h2>
+          <p class="muted">This is the exact flow the contract enforces. Five steps. Commit, reveal, challenge, execute. Or cancel. Click through to see every state.</p>
+        </div>
+
+        <div class="petition-sim">
+          <ol class="sim-steps">
+            <li class="sim-step" data-step="1">
+              <div class="sim-num">01</div>
+              <div class="sim-body">
+                <div class="sim-title">Custodian files petition</div>
+                <div class="sim-detail">
+                  <span class="sim-who">Sam Reyes</span> · Medical Emergency · <span class="accent mono">2.5 ETH</span>
+                </div>
+              </div>
+            </li>
+            <li class="sim-step" data-step="2">
+              <div class="sim-num">02</div>
+              <div class="sim-body">
+                <div class="sim-title">Confirmers commit sealed votes</div>
+                <div class="sim-commits" id="sim-commits"></div>
+              </div>
+            </li>
+            <li class="sim-step" data-step="3">
+              <div class="sim-num">03</div>
+              <div class="sim-body">
+                <div class="sim-title">Votes reveal together</div>
+                <div class="sim-reveals" id="sim-reveals"></div>
+              </div>
+            </li>
+            <li class="sim-step" data-step="4">
+              <div class="sim-num">04</div>
+              <div class="sim-body">
+                <div class="sim-title">72-hour challenge window</div>
+                <div class="sim-detail">
+                  <div class="sim-challenge-bar"><div class="sim-challenge-fill" id="sim-challenge"></div></div>
+                  <span class="sim-challenge-label dim" id="sim-challenge-label">Waiting…</span>
+                </div>
+              </div>
+            </li>
+            <li class="sim-step" data-step="5">
+              <div class="sim-num">05</div>
+              <div class="sim-body">
+                <div class="sim-title">Funds release · fee to Lazarus Pool</div>
+                <div class="sim-detail">
+                  <span class="dim">Net to Sam Reyes:</span> <span class="accent mono" id="sim-net">·</span>
+                  &nbsp;·&nbsp;
+                  <span class="dim">Fee (0.40%):</span> <span class="mono" id="sim-fee">·</span>
+                </div>
+              </div>
+            </li>
+          </ol>
+
+          <div class="sim-actions">
+            <button class="btn btn-primary" id="sim-play">Play petition ↓</button>
+            <button class="btn btn-ghost" id="sim-cancel">Cancel (you return)</button>
+            <button class="btn btn-ghost" id="sim-reset">Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── 4. MESSAGE COMPOSER ──────── -->
+    <section class="act lab" id="voice" data-act-id="5">
+      <div class="wrap">
+        <div class="lab-head">
+          <div class="mono-label">04 · Your voice</div>
+          <h2>Write what you want<br/>the community to <em>hear.</em></h2>
+          <p class="muted">Your words. Not AI. Released automatically only when your set conditions are met. IPFS for the content, keccak256 hash anchored on-chain.</p>
+        </div>
+
+        <div class="lab-body voice-body">
+          <div class="voice-input">
+            <textarea id="voice-text" class="voice-textarea" placeholder="To my team, my community, the people I built this with ·"></textarea>
+            <div class="voice-meta">
+              <span class="mono dim" id="voice-count">0 characters</span>
+              <span class="mono dim">IPFS hash will pin on save</span>
+            </div>
+          </div>
+
+          <div class="voice-preview">
+            <div class="voice-preview-head">
+              <span class="brand-mark"></span>
+              <div>
+                <div class="voice-preview-name">Lazarus · Community Alert</div>
+                <div class="voice-preview-sub mono dim">Posted when silence is confirmed</div>
+              </div>
+            </div>
+            <div class="voice-preview-body" id="voice-preview-body">
+              <em class="dim">Your words will appear here as you type. They're stored only by you. In your own voice. Until a release condition triggers.</em>
+            </div>
+            <div class="voice-preview-foot mono dim">
+              ⎯ <span id="voice-hash">·</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── 5. FEES & ECONOMICS ──────── -->
+    <section class="act lab" id="fees" data-act-id="6">
+      <div class="wrap">
+        <div class="lab-head">
+          <div class="mono-label">05 · The economics</div>
+          <h2>You never pay<br/>for being <em>protected.</em></h2>
+          <p class="muted">No subscription. No monthly fee. Nothing is ever pulled from your wallet while you're alive and active. Lazarus earns from its own reserve. Not from yours.</p>
+        </div>
+
+        <div class="econ-tiles">
+          <div class="econ-tile">
+            <div class="econ-num mono">01</div>
+            <div class="econ-head">Monitoring · always free</div>
+            <div class="econ-sub">Heartbeat, escalation, role network, Silence Windows, AI assistant, dashboard. Forever, no charge.</div>
+          </div>
+          <div class="econ-tile">
+            <div class="econ-num mono">02</div>
+            <div class="econ-head">Release events only</div>
+            <div class="econ-sub">If. And only if. A release actually fires, the contract takes a small fee from that amount. Never from the rest of your balance.</div>
+          </div>
+          <div class="econ-tile">
+            <div class="econ-num mono">03</div>
+            <div class="econ-head">The Reserve earns yield</div>
+            <div class="econ-sub">Fees accumulate in the Lazarus Reserve, stake into audited yield sources, and sustain the protocol. Passively.</div>
+          </div>
+        </div>
+
+        <div class="fee-calc">
+          <div class="fee-calc-lead mono-label">If. And only if. A release ever happens</div>
+          <div class="fee-types">
+            <button class="fee-type selected" data-fee="emergency" data-bps="40">
+              <span class="ft-name">Emergency release</span>
+              <span class="ft-rate mono">0.40%</span>
+            </button>
+            <button class="fee-type" data-fee="full" data-bps="40">
+              <span class="ft-name">Full incapacitation</span>
+              <span class="ft-rate mono">0.40%</span>
+            </button>
+            <button class="fee-type" data-fee="transition" data-bps="20" data-cap="2500">
+              <span class="ft-name">Final transition</span>
+              <span class="ft-rate mono">0.20% · $2,500 cap</span>
+            </button>
+          </div>
+
+          <div class="fee-slider-row">
+            <span class="mono-label">RELEASE AMOUNT</span>
+            <span class="mono accent fee-amount" id="fee-amount">$1,000,000</span>
+          </div>
+          <input type="range" id="fee-slider" min="10000" max="50000000" step="10000" value="1000000" class="lab-slider" />
+          <div class="lab-slider-scale">
+            <span>$10k</span><span>$100k</span><span>$1M</span><span>$10M</span><span>$50M</span>
+          </div>
+
+          <div class="fee-result">
+            <div class="fee-result-row">
+              <span class="dim">Net to your family / chosen custodian</span>
+              <span class="mono fee-net" id="fee-net">$996,000</span>
+            </div>
+            <div class="fee-result-row fee-result-row--minor">
+              <span class="dim">Protocol fee <span class="fee-bps-label" id="fee-bps-label">(0.40%)</span></span>
+              <span class="mono fee-value" id="fee-value">$4,000</span>
+            </div>
+            <div class="fee-result-row" id="fee-cap-row" style="display:none">
+              <span class="accent">$2,500 cap engaged</span>
+              <span class="mono dim">Would have been <s id="fee-pretty"></s></span>
+            </div>
+          </div>
+
+          <div class="fee-note mono dim">This fee fires <em>only</em> on a release event. Never on normal activity.<br/>Confirmers &amp; Watchers earn a flat per-event stipend from the Reserve, never from your balance.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── 7. SECURITY. The guarantees ──────── -->
+    <section id="security" class="act act-security" data-act-id="8">
+      <div class="wrap">
+        <div class="lab-head">
+          <div class="mono-label">07 · The guarantees</div>
+          <h2>Not our policy.<br/>The <em>contract's rules.</em></h2>
+          <p class="muted">Lazarus never holds your keys. Your wallet is yours; the contract only reads what's already public. The invariants below are enforced by code on Base. Not trust, not policy, not promises.</p>
+        </div>
+
+        <div class="manifesto-block">
+          <div class="mono-label accent">FIVE LAWS WRITTEN IN CODE</div>
+          <div class="manifesto">
+            <span>Normal transactions are never touched. </span>
+            <span>Time alone cannot trigger a release. </span>
+            <span>The person who verifies <em>cannot receive</em>. </span>
+            <span>Two watchers can veto any petition. </span>
+            <span>Death-triggered fees are capped at <em>$2,500</em> flat.</span>
+          </div>
+        </div>
+
+        <div class="guarantees">
+          <div class="guarantee fade-up">
+            <div class="guarantee-num mono">01</div>
+            <div class="guarantee-head">Your keys stay in your wallet</div>
+            <div class="guarantee-sub">Lazarus never takes custody at signup. It monitors on-chain activity. Public data anyone can read. No deposit, no approval that can move funds on its own.</div>
+          </div>
+          <div class="guarantee fade-up">
+            <div class="guarantee-num mono">02</div>
+            <div class="guarantee-head">Role isolation is contract-level</div>
+            <div class="guarantee-sub">A Confirmer who votes on a petition is <em>programmatically excluded</em> from receiving funds from that petition. The chain enforces this. Not Lazarus policy.</div>
+          </div>
+          <div class="guarantee fade-up">
+            <div class="guarantee-num mono">03</div>
+            <div class="guarantee-head">If we disappear, the contract stays</div>
+            <div class="guarantee-sub">Immutable core logic runs on Base. A non-profit foundation mirrors the indexer and notifications. Your protection doesn't depend on our company existing.</div>
+          </div>
+          <div class="guarantee fade-up">
+            <div class="guarantee-num mono">04</div>
+            <div class="guarantee-head">One action returns everything</div>
+            <div class="guarantee-sub">Resurrect. One signed transaction, from any device. Cancels active petitions, restores your Protection Score, re-arms the heartbeat. You're always in control.</div>
+          </div>
+        </div>
+
+        <div class="compare">
+          <div class="compare-head">
+            <div class="mono-label">How it compares</div>
+            <p class="muted">There are adjacent ideas. None of them are built for the everyday wallet of someone who wants to stay <em>alive and active</em> while protection runs quietly in the background.</p>
+          </div>
+          <div class="compare-scroll">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="compare-us">Lazarus</th>
+                  <th>Safe multisig</th>
+                  <th>Legal will</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Protects</td>
+                  <td class="compare-us">Wallet you already use</td>
+                  <td>Only assets moved into the Safe</td>
+                  <td>No crypto-native enforcement</td>
+                </tr>
+                <tr>
+                  <td>Everyday cost</td>
+                  <td class="compare-us">$0 · invisible</td>
+                  <td>N-of-M signing on every tx</td>
+                  <td>Lawyer + probate</td>
+                </tr>
+                <tr>
+                  <td>Anti-collusion</td>
+                  <td class="compare-us">Verifier cannot receive</td>
+                  <td>Trust the signers</td>
+                  <td>Depends on executor</td>
+                </tr>
+                <tr>
+                  <td>Trigger</td>
+                  <td class="compare-us">Silence + evidence + votes</td>
+                  <td>Manual, always on</td>
+                  <td>Probate court</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── 8. FAQ. Native accordion, no JS ──────── -->
+    <section id="faq" class="act-faq">
+      <div class="wrap-md">
+        <div class="faq-head">
+          <div class="mono-label">Before you sign up</div>
+          <h2>Common questions.<br/><em>Plainly answered.</em></h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Does Lazarus ever control my wallet?</summary>
+            <div class="faq-a">No. Your private keys stay in your wallet. MetaMask, Phantom, Ledger, whatever you already use. Lazarus monitors on-chain activity, which is public data anyone can read. There is no approval or signature that lets Lazarus move your funds on its own.</div>
+          </details>
+          <details class="faq-item">
+            <summary>What if I just forget to log in for a month?</summary>
+            <div class="faq-a">Not an issue. The heartbeat is any on-chain activity. Not app check-ins. A single outgoing transaction is a full heartbeat. HODLers set a longer baseline (30 / 60 / 90 days) at setup. Going offline on purpose? Schedule a Silence Window; no escalation during it.</div>
+          </details>
+          <details class="faq-item">
+            <summary>What stops a Custodian from filing a false petition?</summary>
+            <div class="faq-a">Three things at once. Confirmers vote blind through commit–reveal, and any voter is automatically <em>excluded from receiving funds</em> from that petition. There's a 72-hour challenge window after reveal. And any two Watchers can veto the petition outright.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Does this require KYC?</summary>
+            <div class="faq-a">Monitoring is permissionless. No KYC to set up, no identity check, no onboarding gatekeeper. A release event that moves serious sums through a licensed custodian partner may involve whatever that partner's jurisdiction requires. You'll know before it fires.</div>
+          </details>
+          <details class="faq-item">
+            <summary>What happens if Lazarus (the company) disappears?</summary>
+            <div class="faq-a">The contract keeps running. Core logic is immutable and self-executing on Base. A non-profit foundation mirrors the indexer and notification infrastructure. Your protection does not depend on Lazarus-the-company continuing to exist.</div>
+          </details>
+          <details class="faq-item">
+            <summary>What chains are supported?</summary>
+            <div class="faq-a">Base mainnet and Base Sepolia testnet at launch. Ethereum mainnet follows. Multi-chain (Solana, Arbitrum, Polygon) is the Phase 3 roadmap. WalletConnect handles signing, so Ledger, Trezor and other hardware wallets work natively.</div>
+          </details>
+          <details class="faq-item">
+            <summary>How do I cancel or change my mind?</summary>
+            <div class="faq-a">One signed transaction. Tap Resurrect in the app. It calls <code class="mono">cancelPetition</code> on anything pending, restores your Protection Score, and re-arms the heartbeat. Reversible by design, every step of the way.</div>
+          </details>
+          <details class="faq-item">
+            <summary>Is the contract audited?</summary>
+            <div class="faq-a">Audit in progress. The contract is public, the test suite passes, and it's already live on Base Sepolia for public inspection. Mainnet launches only after audit completion. Never before.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────── FINAL CTA ──────── -->
+    <section class="act-cta">
+      <div class="wrap-md">
+        <h2 class="cta-title fade-up">The best projects are<br/>bigger than<br/><em>any one person.</em></h2>
+        <p class="cta-sub fade-up">Five minutes to set up. A lifetime of quiet.</p>
+        <div class="cta-ctas fade-up">
+          <a href="app.html" class="btn btn-primary btn-lg magnetic">
+            Start protection
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#security" class="btn btn-ghost btn-lg">See the guarantees</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══ FOOTER ═══════════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="wrap">
+      <!-- Roadmap strip -->
+      <div class="footer-roadmap">
+        <div class="roadmap-item shipped">
+          <span class="roadmap-n mono">01</span>
+          <div>
+            <div class="roadmap-phase">Testnet live</div>
+            <div class="roadmap-state mono">SHIPPED</div>
+          </div>
+        </div>
+        <div class="roadmap-item active">
+          <span class="roadmap-n mono">02</span>
+          <div>
+            <div class="roadmap-phase">Mainnet + audit</div>
+            <div class="roadmap-state mono">ACTIVE · 2026</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-n mono">03</span>
+          <div>
+            <div class="roadmap-phase">Multi-chain + mobile</div>
+            <div class="roadmap-state mono">NEXT</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-n mono">04</span>
+          <div>
+            <div class="roadmap-phase">Native Lazarus Wallet</div>
+            <div class="roadmap-state mono">VISION</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span>Lazarus</span>
+        </div>
+        <p class="footer-tag">Crypto continuity insurance. Normal transactions are never touched.</p>
+        <div class="footer-badges mono">
+          <span class="footer-badge"><span class="trust-dot"></span>BASE SEPOLIA · v2.0</span>
+          <span class="footer-badge">OPEN SOURCE</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="app.html">Open app</a>
+        <a href="demo.html">Watch demo</a>
+        <a href="#play">Protection Score</a>
+        <a href="#fees">Fees</a>
+      </div>
+      <div class="footer-col">
+        <h4>Protocol</h4>
+        <a href="#petition">Petition flow</a>
+        <a href="#invite">Role invitations</a>
+        <a href="#security">Smart contract</a>
+        <a href="#security">Security model</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="#faq">FAQ</a>
+        <a href="docs.html">Documentation</a>
+        <a href="mailto:hello@lazarus.xyz">Contact</a>
+      </div>
+    </div>
+    <div class="wrap footer-foot">
+      <span class="mono">© 2026 Lazarus Protocol · All invariants enforced on-chain.</span>
+      <span class="mono footer-legal-note">Pre-launch · legal docs drop before mainnet</span>
+    </div>
+  </footer>
+
+  <!-- ══ SCRIPTS ══════════════════════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+  <script src="js/contract.js"></script>
+  <script src="js/hero3d.js"></script>
+  <script src="js/marketing.js"></script>
+  <script src="js/sol.js"></script>
+</body>
+</html>

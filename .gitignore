@@ -1,0 +1,32 @@
+# env
+.env
+.env.local
+.env.*.local
+
+# hardhat
+node_modules/
+cache/
+artifacts/
+coverage/
+coverage.json
+typechain/
+typechain-types/
+
+# editor / os
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
+
+# claude code local config
+.claude/
+
+# internal strategy docs — not for public repo
+VISION.md
+.internal/
+
+# logs
+*.log
+.vercel

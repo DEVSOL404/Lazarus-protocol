@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lazarus · 90-second walkthrough</title>
+  <meta name="description" content="The Lazarus Protocol product walkthrough. 90 seconds, autoplaying." />
+  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark" />
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23000'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23a78bfa' opacity='0.18'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23a78bfa'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%23000'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+
+<style>
+/* ─── LAZARUS DEMO — 90s self-running walkthrough ───────────────────
+ * Single file. Eight scenes. Captioned. Auto-loops.
+ * Designed to be screen-recorded as the official demo video, OR
+ * embedded as the live demo by itself.
+ * ──────────────────────────────────────────────────────────────────── */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: #000;
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* ── Cinema frame: 16:9 stage centered in viewport ─────────────────── */
+
+.demo-frame {
+  position: relative;
+  width: min(100vw, calc(100vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
+  user-select: none;
+}
+
+@media (max-aspect-ratio: 16/9) {
+  .demo-frame { width: 100vw; height: calc(100vw * 9 / 16); }
+}
+
+/* Vignette + film grain — adds the "this was designed" feel */
+.demo-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+  z-index: 90;
+}
+.demo-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 91;
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+
+/* ── Top bar: progress + brand ─────────────────────────────────────── */
+
+.topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.85), transparent);
+  z-index: 80;
+  pointer-events: none;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+.brand-mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 18px var(--accent), 0 0 36px var(--accent-soft);
+  animation: pulse-mark 2.4s var(--ease-out) infinite;
+}
+@keyframes pulse-mark {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.15); opacity: 0.85; }
+}
+.topbar .scene-id {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+.topbar .progress-track {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+}
+.topbar .progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  box-shadow: 0 0 12px var(--accent);
+  transition: width 100ms linear;
+}
+
+/* ── Scene container ───────────────────────────────────────────────── */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+.scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms var(--ease-out);
+}
+.scene.active {
+  opacity: 1;
+}
+
+/* ── Caption track — cinematic, no box ──────────────────────────────
+ * Floating text, weighted typography, soft drop-shadow for legibility
+ * over any scene. No backdrop blur, no pill — looks like a film, not
+ * a YouTube subtitle. */
+
+.captions {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 11%;
+  display: flex;
+  justify-content: center;
+  z-index: 70;
+  pointer-events: none;
+  padding: 0 8%;
+}
+.caption {
+  display: inline-block;
+  max-width: 28ch;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(18px, 2.2vw, 30px);
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: rgba(255, 255, 255, 0.96);
+  text-align: center;
+  text-wrap: balance;
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.85),
+    0 0 30px rgba(0, 0, 0, 0.6),
+    0 1px 2px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+}
+.caption.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.caption em {
+  font-style: normal;
+  color: var(--accent);
+  font-weight: 700;
+  text-shadow:
+    0 0 24px rgba(167, 139, 250, 0.5),
+    0 2px 12px rgba(0, 0, 0, 0.85);
+}
+
+/* ── Controls ──────────────────────────────────────────────────────── */
+
+.controls {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(8, 8, 12, 0.6);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  z-index: 95;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-2);
+}
+.btn-ctl {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--t-sm) var(--ease-out);
+}
+.btn-ctl:hover { background: var(--glass-2); }
+.btn-ctl.muted { color: var(--text-3); }
+.btn-ctl svg { width: 12px; height: 12px; }
+.timecode {
+  padding: 0 8px;
+  letter-spacing: 0.06em;
+}
+/* ── Play overlay: autoplay-safe gate ─────────────────────────────── */
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: radial-gradient(ellipse at center, rgba(20,20,28,0.85), rgba(0,0,0,0.96));
+  backdrop-filter: blur(10px);
+  transition: opacity 700ms var(--ease-out);
+}
+.play-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.play-overlay .preview-mark {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 50px var(--accent), 0 0 120px rgba(167,139,250,0.4);
+  position: relative;
+  margin-bottom: 4px;
+  animation: pulse-mark 2.4s var(--ease-out) infinite;
+}
+.play-overlay h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 44px);
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.play-overlay p {
+  font-family: var(--font-body);
+  font-size: clamp(13px, 1.2vw, 15px);
+  color: var(--text-2);
+  max-width: 32ch;
+  text-align: center;
+  line-height: 1.5;
+}
+.btn-play-big {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 28px;
+  background: var(--accent);
+  color: #06060a;
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: transform var(--t-sm) var(--ease-out), box-shadow var(--t-sm) var(--ease-out);
+  margin-top: 8px;
+}
+.btn-play-big:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(167,139,250,0.4);
+}
+.btn-play-big svg { width: 14px; height: 14px; }
+.btn-secondary {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--line-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: color var(--t-sm), border-color var(--t-sm);
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--line-hi); }
+
+/* ── Virtual cursor ────────────────────────────────────────────────── */
+
+.cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  z-index: 75;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: transform 700ms var(--ease-out), opacity 300ms var(--ease-out);
+  opacity: 0;
+}
+.cursor::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.4);
+}
+.cursor::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: transform 400ms var(--ease-out), opacity 400ms var(--ease-out);
+}
+.cursor.click::after {
+  opacity: 1;
+  transform: scale(1.3);
+  transition: transform 600ms var(--ease-out), opacity 600ms var(--ease-out);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SCENE 1 — Cold open
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.scene-1 {
+  background: #000;
+  flex-direction: column;
+  gap: 32px;
+}
+.s1-pulse {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.s1-pulse::before, .s1-pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: s1-pulse 2.6s var(--ease-out) infinite;
+}
+.s1-pulse::after {
+  animation-delay: 1.3s;
+}
+@keyframes s1-pulse {
+  0%   { transform: scale(0.4); opacity: 0; }
+  10%  { opacity: 0.6; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+.s1-dot {
+  width: 24px;
+  height: 24px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 30px var(--accent), 0 0 60px var(--accent-soft);
+  margin: 28px;
+  position: relative;
+  z-index: 2;
+}
+.s1-title {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-align: center;
+  line-height: 1;
+}
+.s1-sub {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SCENE 2 — The problem
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.scene-2 {
+  background: linear-gradient(180deg, #050507 0%, #000 100%);
+  flex-direction: column;
+  gap: 40px;
+  padding: 0 8%;
+}
+.s2-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--text);
+  max-width: 22ch;
+}
+.s2-headline em {
+  font-style: normal;
+  color: var(--silent);
+}
+.s2-stats {
+  display: flex;
+  gap: clamp(20px, 5vw, 80px);
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  max-width: 920px;
+}
+.s2-stat {
+  flex: 1;
+  padding: 20px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--glass);
+  text-align: center;
+}
+.s2-stat-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--silent);
+  letter-spacing: -0.02em;
+}
+.s2-stat-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SCENE 3 — Lazarus, the answer
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.scene-3 {
+  background: #000;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 clamp(24px, 8%, 120px);
+  position: relative;
+}
+.s3-hero {
+  max-width: 720px;
+  position: relative;
+  z-index: 2;
+}
+.s3-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.s3-eyebrow .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+.s3-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(34px, 5.4vw, 68px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.s3-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+.s3-lede {
+  font-size: clamp(15px, 1.4vw, 19px);
+  color: var(--text-2);
+  margin-top: 24px;
+  max-width: 56ch;
+  line-height: 1.5;
+}
+.s3-network {
+  position: absolute;
+  right: clamp(24px, 8%, 120px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: clamp(220px, 22vw, 360px);
+  height: clamp(220px, 22vw, 360px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s var(--ease-out);
+}
+.scene-3.active .s3-network { opacity: 1; }
+.s3-network svg { width: 100%; height: 100%; }
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SCENE 4 — Dashboard tour
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.scene-4 {
+  background: #06060a;
+  align-items: stretch;
+  justify-content: center;
+  padding: clamp(24px, 4%, 60px) clamp(24px, 6%, 80px);
+}
+.s4-app {
+  width: 100%;
+  max-width: 1240px;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+}
+.s4-sidebar {
+  background: var(--ink);
+  border-right: 1px solid var(--line);
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.s4-sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 16px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+}
+.s4-sb-brand .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+.s4-sb-section {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--text-4);
+  text-transform: uppercase;
+  padding: 12px 8px 4px;
+}
+.s4-sb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  cursor: default;
+  transition: background var(--t-sm), color var(--t-sm);
+}
+.s4-sb-item .icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+}
+.s4-sb-item.active {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.s4-sb-item.active .icon {
+  color: var(--accent);
+  opacity: 1;
+}
+
+.s4-main {
+  padding: 24px 28px;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 18px;
+}
+.s4-greeting {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+}
+.s4-greeting em {
+  font-style: normal;
+  color: var(--accent);
+}
+.s4-row {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 18px;
+}
+.s4-card {
+  padding: 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.s4-card-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+.s4-score {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px auto 0;
+  width: 180px;
+  height: 180px;
+}
+.s4-score svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.s4-score-num {
+  position: absolute;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 56px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.s4-score-state {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--alive);
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 8px;
+}
+.s4-score.warn .s4-score-state { color: var(--watch); }
+.s4-score.bad .s4-score-state { color: var(--silent); }
+.s4-score.warn .s4-score-num { color: var(--watch); }
+.s4-score.bad .s4-score-num { color: var(--silent); }
+
+.s4-roles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.s4-role {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface-3);
+}
+.s4-role .label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.s4-role .count {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+.s4-role.confirmer .count { color: var(--accent); }
+.s4-role.custodian .count { color: var(--alive); }
+.s4-role.watcher .count { color: var(--watch); }
+
+.s4-network-grid {
+  margin-top: 4px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.s4-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.s4-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 10px;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.s4-avatar.green { background: var(--alive); }
+.s4-avatar.amber { background: var(--watch); }
+.s4-avatar.purple { background: var(--accent); }
+.s4-avatar.red { background: var(--silent); }
+.s4-avatar.blue { background: #60a5fa; }
+.s4-avatar.pink { background: #f472b6; }
+.s4-person .name {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.s4-person .role-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SCENE 5 — Score drops, petition opens
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.scene-5 {
+  background: #06060a;
+  align-items: stretch;
+  justify-content: center;
+  padding: clamp(24px, 4%, 60px) clamp(24px, 6%, 80px);
+}
+.s5-stack {
+  width: 100%;
+  max-width: 1240px;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: center;
+}
+.s5-score-large {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 32px;
+  text-align: center;
+}
+.s5-score-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 140px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--alive);
+  transition: color 800ms var(--ease-out);
+}
+.s5-score-large.warn .s5-score-num { color: var(--watch); }
+.s5-score-large.bad  .s5-score-num { color: var(--silent); }
+.s5-score-state {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--alive);
+  margin-top: 12px;
+  letter-spacing: 0.18em;
+}
+.s5-score-large.warn .s5-score-state { color: var(--watch); }
+.s5-score-large.bad  .s5-score-state { color: var(--silent); }
+.s5-score-baseline {
+  margin-top: 32px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+
+.s5-petition {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 28px 32px;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 800ms var(--ease-out), transform 800ms var(--ease-out);
+}
+.s5-petition.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.s5-petition-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--silent-soft);
+  border: 1px solid color-mix(in srgb, var(--silent) 30%, transparent);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--silent);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.s5-petition-tag .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--silent);
+  animation: pulse-mark 1.4s var(--ease-out) infinite;
+}
+.s5-petition-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.s5-petition-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  margin-bottom: 18px;
+}
+.s5-petition-stages {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+.s5-stage-pill {
+  padding: 8px 6px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  transition: background var(--t), color var(--t), border-color var(--t);
+}
+.s5-stage-pill.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SCENE 6 — Petition lifecycle
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.scene-6 {
+  background: #06060a;
+  flex-direction: column;
+  gap: 36px;
+  padding: 0 6%;
+}
+.s6-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(20px, 2.6vw, 32px);
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.s6-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+.s6-flow {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1100px;
+  gap: 8px;
+}
+.s6-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  position: relative;
+  transition: background 600ms var(--ease-out), border-color 600ms var(--ease-out), transform 600ms var(--ease-out);
+}
+.s6-step.lit {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+.s6-step.lit .s6-icon {
+  color: var(--accent);
+}
+.s6-step.lit .s6-step-name {
+  color: var(--accent);
+}
+.s6-step.completed {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.s6-step.completed .s6-icon {
+  color: var(--alive);
+}
+.s6-step.completed .s6-step-name {
+  color: var(--alive);
+}
+.s6-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--text-3);
+  transition: color 600ms var(--ease-out);
+}
+.s6-step-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--text-2);
+  transition: color 600ms var(--ease-out);
+}
+.s6-step-detail {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  text-align: center;
+}
+.s6-arrow {
+  align-self: center;
+  color: var(--text-4);
+  font-size: 14px;
+  flex-shrink: 0;
+  width: 16px;
+  display: flex;
+  justify-content: center;
+}
+.s6-invariants {
+  display: flex;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.s6-invariants span {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SCENE 7 — Duress mode
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.scene-7 {
+  background: radial-gradient(ellipse at top, rgba(248,113,113,0.08), transparent 60%), #06060a;
+  flex-direction: column;
+  gap: 28px;
+  padding: 0 6%;
+}
+.s7-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 44px);
+  letter-spacing: -0.02em;
+  text-align: center;
+  max-width: 22ch;
+}
+.s7-headline em {
+  font-style: normal;
+  color: var(--silent);
+}
+.s7-stage {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: clamp(20px, 3vw, 56px);
+  width: 100%;
+  max-width: 1000px;
+}
+.s7-side {
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.s7-side .label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.s7-side .body {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+.s7-side.attacker {
+  border-color: rgba(248,113,113,0.3);
+}
+.s7-side.attacker .label { color: var(--silent); }
+.s7-side.protocol {
+  border-color: rgba(167,139,250,0.3);
+}
+.s7-side.protocol .label { color: var(--accent); }
+
+.s7-button-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+.s7-button {
+  position: relative;
+  padding: 12px 24px;
+  border: 1px solid color-mix(in srgb, var(--silent) 40%, transparent);
+  border-radius: 999px;
+  background: var(--silent-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--silent);
+  text-transform: uppercase;
+  transition: all 400ms var(--ease-out);
+}
+.s7-button.armed {
+  background: var(--silent);
+  color: #fff;
+  box-shadow: 0 0 32px var(--silent), 0 0 64px rgba(248,113,113,0.4);
+  transform: scale(1.08);
+}
+.s7-button-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 999px;
+  border: 1px solid var(--silent);
+  opacity: 0;
+  pointer-events: none;
+  animation: s7-armed-pulse 1.6s var(--ease-out) infinite;
+  animation-play-state: paused;
+}
+.scene-7.armed .s7-button-pulse {
+  animation-play-state: running;
+}
+@keyframes s7-armed-pulse {
+  0%   { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.s7-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--text-3);
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  SCENE 8 — Lockup + four invariants
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.scene-8 {
+  background: #000;
+  flex-direction: column;
+  gap: 32px;
+  padding: 0 6%;
+  text-align: center;
+}
+.s8-mark {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.s8-mark::before {
+  content: '';
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.18;
+  filter: blur(20px);
+}
+.s8-mark::after {
+  content: '';
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 36px var(--accent);
+}
+.s8-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(48px, 7vw, 88px);
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+.s8-tagline {
+  font-family: var(--font-body);
+  font-size: clamp(14px, 1.4vw, 18px);
+  color: var(--text-2);
+  letter-spacing: 0.02em;
+  max-width: 50ch;
+  line-height: 1.5;
+}
+.s8-invariants {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  max-width: 1100px;
+  margin-top: 12px;
+  width: 100%;
+}
+.s8-inv {
+  padding: 16px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+}
+.s8-inv.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.s8-inv-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.s8-inv-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  margin-top: 6px;
+  line-height: 1.25;
+}
+.s8-cta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  color: var(--text-2);
+  text-transform: uppercase;
+  margin-top: 14px;
+}
+.s8-cta em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.1ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="demo-frame" id="frame">
+
+  <!-- ── TOP BAR ─────────────────────────────────────────────────── -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span>Lazarus</span>
+    </div>
+    <div class="scene-id" id="scene-id">SCENE 01 / 08</div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress"></div>
+    </div>
+  </div>
+
+  <!-- ── STAGE ───────────────────────────────────────────────────── -->
+  <div class="stage" id="stage">
+
+    <!-- ── SCENE 1: Cold open ──────────────────────────────────── -->
+    <div class="scene scene-1" data-scene="1">
+      <div class="s1-pulse"><div class="s1-dot"></div></div>
+      <div class="s1-title">LAZARUS</div>
+      <div class="s1-sub">Crypto continuity insurance</div>
+    </div>
+
+    <!-- ── SCENE 2: The problem ────────────────────────────────── -->
+    <div class="scene scene-2" data-scene="2">
+      <div class="s2-headline">
+        Every year, billions in crypto<br/>become <em>permanently unrecoverable.</em>
+      </div>
+      <div class="s2-stats">
+        <div class="s2-stat">
+          <div class="s2-stat-num">$140B+</div>
+          <div class="s2-stat-label">Lost forever</div>
+        </div>
+        <div class="s2-stat">
+          <div class="s2-stat-num">20%</div>
+          <div class="s2-stat-label">Of all bitcoin</div>
+        </div>
+        <div class="s2-stat">
+          <div class="s2-stat-num">∞</div>
+          <div class="s2-stat-label">Families locked out</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCENE 3: The answer ─────────────────────────────────── -->
+    <div class="scene scene-3" data-scene="3">
+      <div class="s3-hero">
+        <div class="s3-eyebrow">
+          <span class="dot"></span>
+          INSURANCE LAYER · NOT A NEW WALLET
+        </div>
+        <h1 class="s3-title">
+          Your crypto shouldn't <em>vanish</em><br/>if life ever changes.
+        </h1>
+        <p class="s3-lede">
+          An on-chain continuity layer for the wallet you already use. If the signal ever stops, the people you trust are already in motion.
+        </p>
+      </div>
+      <div class="s3-network">
+        <svg viewBox="0 0 360 360">
+          <!-- center node -->
+          <circle cx="180" cy="180" r="14" fill="#a78bfa"/>
+          <circle cx="180" cy="180" r="28" fill="none" stroke="#a78bfa" stroke-opacity="0.3"/>
+          <!-- ring nodes -->
+          <g class="s3-ring">
+            <line x1="180" y1="180" x2="180" y2="60"  stroke="#a78bfa" stroke-opacity="0.2"/>
+            <line x1="180" y1="180" x2="282" y2="120" stroke="#a78bfa" stroke-opacity="0.2"/>
+            <line x1="180" y1="180" x2="300" y2="240" stroke="#a78bfa" stroke-opacity="0.2"/>
+            <line x1="180" y1="180" x2="220" y2="320" stroke="#a78bfa" stroke-opacity="0.2"/>
+            <line x1="180" y1="180" x2="100" y2="320" stroke="#a78bfa" stroke-opacity="0.2"/>
+            <line x1="180" y1="180" x2="60"  y2="240" stroke="#a78bfa" stroke-opacity="0.2"/>
+            <line x1="180" y1="180" x2="80"  y2="120" stroke="#a78bfa" stroke-opacity="0.2"/>
+            <circle cx="180" cy="60"  r="7" fill="#a78bfa" fill-opacity="0.85"/>
+            <circle cx="282" cy="120" r="7" fill="#34d399" fill-opacity="0.85"/>
+            <circle cx="300" cy="240" r="7" fill="#fbbf24" fill-opacity="0.85"/>
+            <circle cx="220" cy="320" r="7" fill="#a78bfa" fill-opacity="0.85"/>
+            <circle cx="100" cy="320" r="7" fill="#34d399" fill-opacity="0.85"/>
+            <circle cx="60"  cy="240" r="7" fill="#fbbf24" fill-opacity="0.85"/>
+            <circle cx="80"  cy="120" r="7" fill="#a78bfa" fill-opacity="0.85"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ── SCENE 4: Dashboard tour ─────────────────────────────── -->
+    <div class="scene scene-4" data-scene="4">
+      <div class="s4-app">
+        <aside class="s4-sidebar">
+          <div class="s4-sb-brand">
+            <span class="dot"></span>
+            <span>Lazarus</span>
+          </div>
+          <div class="s4-sb-section">My Protection</div>
+          <div class="s4-sb-item active">
+            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+            Dashboard
+          </div>
+          <div class="s4-sb-item">
+            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><path d="M3 12h3l3-9 4 18 3-9h5"/></svg>
+            Heartbeat
+          </div>
+          <div class="s4-sb-item">
+            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+            Roles
+          </div>
+          <div class="s4-sb-item">
+            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/></svg>
+            Petitions
+          </div>
+          <div class="s4-sb-section">Network</div>
+          <div class="s4-sb-item">
+            <svg class="icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><circle cx="12" cy="12" r="9"/></svg>
+            Duties
+          </div>
+        </aside>
+        <main class="s4-main">
+          <div class="s4-greeting">You're <em>covered</em>, @maya.</div>
+          <div class="s4-row">
+            <div class="s4-card">
+              <div class="s4-card-label">Protection score</div>
+              <div class="s4-score" id="s4-ring">
+                <svg viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+                  <circle id="s4-ring-fg" cx="50" cy="50" r="44" fill="none" stroke="#34d399" stroke-width="6"
+                    stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="0"/>
+                </svg>
+                <div class="s4-score-num">100</div>
+              </div>
+              <div class="s4-score-state">ALL SYSTEMS QUIET</div>
+            </div>
+            <div class="s4-card">
+              <div class="s4-card-label">Your network</div>
+              <div class="s4-roles" style="margin-top:10px">
+                <div class="s4-role confirmer">
+                  <div class="label">Confirmers</div>
+                  <div class="count">3</div>
+                </div>
+                <div class="s4-role custodian">
+                  <div class="label">Custodians</div>
+                  <div class="count">2</div>
+                </div>
+                <div class="s4-role watcher">
+                  <div class="label">Watchers</div>
+                  <div class="count">2</div>
+                </div>
+              </div>
+              <div class="s4-network-grid">
+                <div class="s4-person"><div class="s4-avatar green">JP</div><div><div class="name">Jordan Park</div><div class="role-tag">Custodian</div></div></div>
+                <div class="s4-person"><div class="s4-avatar purple">RV</div><div><div class="name">Rosa Vélez</div><div class="role-tag">Confirmer</div></div></div>
+                <div class="s4-person"><div class="s4-avatar amber">AC</div><div><div class="name">Alice Chen</div><div class="role-tag">Watcher</div></div></div>
+                <div class="s4-person"><div class="s4-avatar blue">DT</div><div><div class="name">Dao Thuc</div><div class="role-tag">Confirmer</div></div></div>
+                <div class="s4-person"><div class="s4-avatar red">BK</div><div><div class="name">Ben Kowalski</div><div class="role-tag">Confirmer</div></div></div>
+                <div class="s4-person"><div class="s4-avatar pink">MS</div><div><div class="name">Maria Singh</div><div class="role-tag">Custodian</div></div></div>
+                <div class="s4-person"><div class="s4-avatar amber">EO</div><div><div class="name">Emil Ostrov</div><div class="role-tag">Watcher</div></div></div>
+                <div class="s4-person"><div class="s4-avatar purple">YN</div><div><div class="name">Yuki Nakamura</div><div class="role-tag">Confirmer</div></div></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ── SCENE 5: Score drops, petition opens ───────────────── -->
+    <div class="scene scene-5" data-scene="5">
+      <div class="s5-stack">
+        <div class="s5-score-large" id="s5-score">
+          <div class="s5-score-num" id="s5-num">100</div>
+          <div class="s5-score-state" id="s5-state">ALL SYSTEMS QUIET</div>
+          <div class="s5-score-baseline">
+            <span>0d silent</span>
+            <span>baseline 30d</span>
+          </div>
+        </div>
+        <div class="s5-petition" id="s5-petition">
+          <div class="s5-petition-tag"><span class="dot"></span> PETITION OPEN</div>
+          <div class="s5-petition-title">Medical emergency · 0.4 ETH</div>
+          <div class="s5-petition-meta">Filed by Jordan Park · 2 confirmers required</div>
+          <div class="s5-petition-stages">
+            <div class="s5-stage-pill active">FILE</div>
+            <div class="s5-stage-pill">COMMIT</div>
+            <div class="s5-stage-pill">REVEAL</div>
+            <div class="s5-stage-pill">CHALLENGE</div>
+            <div class="s5-stage-pill">EXECUTE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCENE 6: Petition lifecycle ─────────────────────────── -->
+    <div class="scene scene-6" data-scene="6">
+      <div class="s6-title"><em>Commit-reveal voting.</em> Confirmers can't see each other's votes until reveal closes.</div>
+      <div class="s6-flow" id="s6-flow">
+        <div class="s6-step" data-step="0">
+          <svg class="s6-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6"/></svg>
+          <div class="s6-step-name">File</div>
+          <div class="s6-step-detail">Custodian</div>
+        </div>
+        <div class="s6-arrow">→</div>
+        <div class="s6-step" data-step="1">
+          <svg class="s6-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><path d="M12 1l3.09 6.26L22 8.27l-5 4.87 1.18 6.88L12 16.77l-6.18 3.25L7 13.14 2 8.27l6.91-1.01L12 1z"/></svg>
+          <div class="s6-step-name">Commit</div>
+          <div class="s6-step-detail">24h · sealed</div>
+        </div>
+        <div class="s6-arrow">→</div>
+        <div class="s6-step" data-step="2">
+          <svg class="s6-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg>
+          <div class="s6-step-name">Reveal</div>
+          <div class="s6-step-detail">24h · public</div>
+        </div>
+        <div class="s6-arrow">→</div>
+        <div class="s6-step" data-step="3">
+          <svg class="s6-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <div class="s6-step-name">Challenge</div>
+          <div class="s6-step-detail">72h · veto window</div>
+        </div>
+        <div class="s6-arrow">→</div>
+        <div class="s6-step" data-step="4">
+          <svg class="s6-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none"><path d="M5 12l5 5L20 7"/></svg>
+          <div class="s6-step-name">Execute</div>
+          <div class="s6-step-detail">Funds release</div>
+        </div>
+      </div>
+      <div class="s6-invariants">
+        <span>Voters cannot receive funds</span>
+        <span>2 watchers can veto</span>
+        <span>Owner can resurrect at any time</span>
+      </div>
+    </div>
+
+    <!-- ── SCENE 7: Duress mode ────────────────────────────────── -->
+    <div class="scene scene-7" data-scene="7">
+      <div class="s7-headline">If your key is <em>compromised</em>, the rescue still works.</div>
+      <div class="s7-stage">
+        <div class="s7-side attacker">
+          <div class="label">Coercer</div>
+          <div class="body">Holds the owner key.<br/>Sees a normal heartbeat.</div>
+        </div>
+        <div class="s7-button-frame">
+          <div class="s7-button" id="s7-button">DURESS</div>
+          <div class="s7-button-pulse"></div>
+          <div class="s7-status" id="s7-status">UNDER DURESS · 2 WATCHERS NEEDED TO CANCEL</div>
+        </div>
+        <div class="s7-side protocol">
+          <div class="label">Protocol</div>
+          <div class="body">Locks the cancel.<br/>Two watchers must co-sign.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCENE 8: Lockup + four invariants ───────────────────── -->
+    <div class="scene scene-8" data-scene="8">
+      <div class="s8-mark"></div>
+      <div class="s8-title">LAZARUS</div>
+      <div class="s8-tagline">Continuity insurance for the wallet you already use.</div>
+      <div class="s8-invariants">
+        <div class="s8-inv" data-inv="0">
+          <div class="s8-inv-num">01 · INVARIANT</div>
+          <div class="s8-inv-name">Normal transactions are never intercepted.</div>
+        </div>
+        <div class="s8-inv" data-inv="1">
+          <div class="s8-inv-num">02 · INVARIANT</div>
+          <div class="s8-inv-name">Voters cannot earn from petitions they touch.</div>
+        </div>
+        <div class="s8-inv" data-inv="2">
+          <div class="s8-inv-num">03 · INVARIANT</div>
+          <div class="s8-inv-name">Time alone never triggers a release.</div>
+        </div>
+        <div class="s8-inv" data-inv="3">
+          <div class="s8-inv-num">04 · INVARIANT</div>
+          <div class="s8-inv-name">The owner can always resurrect.</div>
+        </div>
+      </div>
+      <div class="s8-cta">73 tests · MIT · <em>lazarusprotocol.xyz</em></div>
+    </div>
+
+  </div>
+
+  <!-- ── CURSOR ──────────────────────────────────────────────────── -->
+  <div class="cursor" id="cursor"></div>
+
+  <!-- ── CAPTIONS ────────────────────────────────────────────────── -->
+  <div class="captions"><div class="caption" id="caption">&nbsp;</div></div>
+
+  <!-- ── CONTROLS ────────────────────────────────────────────────── -->
+  <div class="controls">
+    <button class="btn-ctl" id="btn-play" aria-label="Play / pause">
+      <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor" style="display:none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    </button>
+    <button class="btn-ctl" id="btn-mute" aria-label="Mute / unmute narration">
+      <svg id="icon-sound" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      <svg id="icon-muted" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M11 5L6 9H2v6h4l5 4z"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>
+    </button>
+    <span class="timecode" id="timecode">00:00 / 01:30</span>
+    <button class="btn-ctl" id="btn-restart" aria-label="Restart">
+      <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+    </button>
+  </div>
+
+  <!-- ── PLAY OVERLAY (autoplay-safe gate) ──────────────────────── -->
+  <div class="play-overlay" id="play-overlay">
+    <div class="preview-mark"></div>
+    <h2>Lazarus Protocol</h2>
+    <p>A 90-second walkthrough. The people, the contract, the moment a wallet goes silent. Best with headphones.</p>
+    <button class="btn-play-big" id="btn-play-big">
+      <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Play with narration
+    </button>
+    <button class="btn-secondary" id="btn-play-silent">Play silent</button>
+    <p style="margin-top:14px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;color:var(--text-3);text-transform:uppercase">
+      Best with headphones
+    </p>
+  </div>
+
+</div>
+
+<script>
+/* ─── LAZARUS DEMO PLAYER ─────────────────────────────────────────────
+ * Single timeline. Time-driven scene activation, captions, and
+ * cursor animation. No external deps.
+ * ─────────────────────────────────────────────────────────────────── */
+
+(function () {
+  'use strict';
+
+  // ── TIMELINE ──────────────────────────────────────────────────────
+  // Total: 90,000 ms (8 scenes). t0/t1 are inclusive.
+  // `caption` is what's shown on screen (HTML allowed).
+  // `narration` is what's spoken aloud (plain text — no markup).
+  // Narration is chunked so each line lands inside its caption window.
+  const T = [
+    {
+      id: 1, t0:     0, t1:  6000, label: '01 / 08',
+      caption: [
+        { t: 1200, text: 'Every year, billions in crypto are lost forever.' },
+      ],
+      narration: [
+        { t: 1200, text: "Every year, billions in crypto get lost forever." },
+      ],
+    },
+    {
+      id: 2, t0:  6000, t1: 14000, label: '02 / 08',
+      caption: [
+        { t:    300, text: 'Lost keys. Owners gone silent. Families locked out.' },
+        { t:   4500, text: 'No path back. The asset just sits there.' },
+      ],
+      narration: [
+        { t:    400, text: "Lost keys, silent wallets, families locked out." },
+        { t:   4500, text: "There's no path back. The asset just sits there." },
+      ],
+    },
+    {
+      id: 3, t0: 14000, t1: 23000, label: '03 / 08',
+      caption: [
+        { t:   400, text: 'Lazarus is an <em>insurance layer</em> on the wallet you already use.' },
+        { t:  4500, text: 'It reads public on-chain activity. It never intercepts a transaction.' },
+      ],
+      narration: [
+        { t:   500, text: "Lazarus is an insurance layer for the wallet you already use." },
+        { t:  4600, text: "It watches your activity, but never touches a transaction." },
+      ],
+    },
+    {
+      id: 4, t0: 23000, t1: 38000, label: '04 / 08',
+      caption: [
+        { t:   400, text: 'Your dashboard. Protection score, role network, the people who watch over you.' },
+        { t:  6000, text: 'Three roles: <em>Confirmers</em> verify, <em>Custodians</em> file and receive, <em>Watchers</em> can veto.' },
+        { t: 10500, text: 'The contract enforces: voters cannot ever receive funds from a petition they voted on.' },
+      ],
+      narration: [
+        { t:   500, text: "This is your dashboard. Your protection score, and the people who watch over you." },
+        { t:  6100, text: "Three roles. Confirmers verify, Custodians file and receive, Watchers can veto." },
+        { t: 10600, text: "And the contract makes sure anyone who voted can't receive funds from that petition." },
+      ],
+    },
+    {
+      id: 5, t0: 38000, t1: 53000, label: '05 / 08',
+      caption: [
+        { t:   400, text: 'If your wallet goes silent past your baseline, the score drops.' },
+        { t:  5500, text: 'A Custodian can file an emergency petition. The 0→100 score gates what they can ask for.' },
+        { t: 10500, text: 'Time alone <em>cannot</em> release funds. There is no automatic drain.' },
+      ],
+      narration: [
+        { t:   500, text: "If your wallet goes quiet past your baseline, the score drops." },
+        { t:  5600, text: "A Custodian can then file an emergency petition. The score gates what they can ask for." },
+        { t: 10600, text: "But time alone can't release funds. There's no automatic drain." },
+      ],
+    },
+    {
+      id: 6, t0: 53000, t1: 67000, label: '06 / 08',
+      caption: [
+        { t:   400, text: 'Five phases: file, commit, reveal, challenge, execute.' },
+        { t:  6000, text: 'Commit-reveal blinds the vote until the window closes. No vote-buying.' },
+        { t: 10500, text: 'A 72-hour challenge window gives the owner one chance to come back.' },
+      ],
+      narration: [
+        { t:   500, text: "Five phases: file, commit, reveal, challenge, execute." },
+        { t:  6100, text: "Commit-reveal blinds the vote until the window closes. No vote-buying." },
+        { t: 10600, text: "And a 72-hour challenge window gives the owner one chance to come back." },
+      ],
+    },
+    {
+      id: 7, t0: 67000, t1: 79000, label: '07 / 08',
+      caption: [
+        { t:   400, text: 'Held at gunpoint? <em>Duress</em> mode looks like a normal heartbeat.' },
+        { t:  5500, text: 'But internally it locks owner-alone cancels. Two watchers must co-sign.' },
+      ],
+      narration: [
+        { t:   500, text: "If you're being coerced, duress mode looks like a normal heartbeat." },
+        { t:  5600, text: "But internally, it locks the cancel. Two watchers must co-sign." },
+      ],
+    },
+    {
+      id: 8, t0: 79000, t1: 90000, label: '08 / 08',
+      caption: [
+        { t:   400, text: 'Four contract-enforced invariants.' },
+        { t:  4500, text: 'Built for everyone. Open source. <em>Live on Base.</em>' },
+      ],
+      narration: [
+        { t:   500, text: "Four invariants, all enforced by the contract." },
+        { t:  4600, text: "Built for everyone. Open source. Live on Base." },
+      ],
+    },
+  ];
+  const TOTAL = T[T.length - 1].t1;
+
+  // ── DOM refs ──────────────────────────────────────────────────────
+  const $ = (s) => document.querySelector(s);
+  const stage = $('#stage');
+  const scenes = Array.from(document.querySelectorAll('.scene'));
+  const sceneIdEl = $('#scene-id');
+  const progressEl = $('#progress');
+  const captionEl = $('#caption');
+  const cursorEl = $('#cursor');
+  const timecodeEl = $('#timecode');
+  const btnPlay = $('#btn-play');
+  const btnRestart = $('#btn-restart');
+  const btnMute = $('#btn-mute');
+  const iconSound = $('#icon-sound');
+  const iconMuted = $('#icon-muted');
+  const iconPlay = $('#icon-play');
+  const iconPause = $('#icon-pause');
+  const overlay = $('#play-overlay');
+  const btnPlayBig = $('#btn-play-big');
+  const btnPlaySilent = $('#btn-play-silent');
+
+  // ── Player state ──────────────────────────────────────────────────
+  let elapsed = 0;
+  let paused = true;       // start paused; overlay must be dismissed first
+  let started = false;
+  let muted = false;
+  let lastTick = 0;
+  let raf = 0;
+  const spokenKeys = new Set();
+
+  // ── Audio engine ──────────────────────────────────────────────────
+  // Two modes, auto-detected:
+  //
+  //   AUDIO:  audio/narration/manifest.json exists → play pre-rendered
+  //           MP3s as a SEQUENTIAL queue. Each line plays in full before
+  //           the next. The visible caption is set on audio.onplay and
+  //           cleared/replaced when the next line starts. Tight sync.
+  //
+  //   SPEECH: no manifest → use Web Speech API with the deepest male
+  //           voice the user's OS ships with, time-driven captions.
+  let mode = 'speech';                  // 'speech' | 'audio'
+  const audioCache = {};                // key → HTMLAudioElement
+  let activeAudio = null;
+  let audioReady = false;               // true once ALL preloads canplaythrough
+
+  // Queue state for AUDIO mode
+  let audioQueue = [];                  // [{ sceneId, key, audio, caption }]
+  let queueIdx = 0;
+  let cumulativeDurations = [0];        // running sum, for progress bar
+  let totalAudioDuration = 0;           // seconds
+  let sceneStartedAt = 0;               // performance.now() when current scene became active
+  let currentSceneId = 1;
+  let loopTimer = 0;
+  let advanceTimer = 0;                 // safety: force-advance if onended doesn't fire
+
+  // ── Ambient music bed ────────────────────────────────────────────
+  // Slow Web Audio drone playing under the narration. Two low sine
+  // oscillators (A1 + E2 — a perfect fifth apart, harmonically stable),
+  // routed through a low-pass with slow LFO modulation. Kept quiet
+  // (gain 0.05) so the voice always sits on top.
+  let ambientCtx = null;
+  let ambientNodes = null;
+
+  function startAmbience() {
+    if (ambientNodes || muted) return;
+    try {
+      ambientCtx = ambientCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = ambientCtx;
+      const now = ctx.currentTime;
+
+      // Two-voice sub drone
+      const osc1 = ctx.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.value = 55;        // A1
+      const osc2 = ctx.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.value = 82.41;     // E2 (perfect fifth)
+
+      // A higher pad — barely audible, adds shimmer
+      const osc3 = ctx.createOscillator();
+      osc3.type = 'triangle';
+      osc3.frequency.value = 220;       // A3
+      const padGain = ctx.createGain();
+      padGain.gain.value = 0.018;
+
+      // Low-pass with slow LFO sweep — gives the bed gentle motion
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 320;
+      filter.Q.value = 0.7;
+
+      const lfo = ctx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.07;       // 14-second sweep cycle
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.value = 110;
+      lfo.connect(lfoGain);
+      lfoGain.connect(filter.frequency);
+
+      // Master gain — fade in over 3s
+      const master = ctx.createGain();
+      master.gain.value = 0.0001;
+      master.gain.exponentialRampToValueAtTime(0.05, now + 3);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      osc3.connect(padGain).connect(filter);
+      filter.connect(master);
+      master.connect(ctx.destination);
+
+      osc1.start(now); osc2.start(now); osc3.start(now); lfo.start(now);
+
+      ambientNodes = { osc1, osc2, osc3, lfo, master, ctx };
+    } catch (e) {
+      // No Web Audio support — silent fallback, demo continues without bed
+      console.warn('[demo] ambient bed disabled:', e);
+    }
+  }
+
+  function stopAmbience() {
+    if (!ambientNodes) return;
+    try {
+      const { osc1, osc2, osc3, lfo, master, ctx } = ambientNodes;
+      const now = ctx.currentTime;
+      // Quick fade out then stop
+      master.gain.cancelScheduledValues(now);
+      master.gain.setValueAtTime(master.gain.value, now);
+      master.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+      setTimeout(() => {
+        try { osc1.stop(); osc2.stop(); osc3.stop(); lfo.stop(); } catch (_) {}
+      }, 700);
+    } catch (_) {}
+    ambientNodes = null;
+  }
+
+  function pauseAmbience(p) {
+    if (!ambientNodes) return;
+    try {
+      const { master, ctx } = ambientNodes;
+      const now = ctx.currentTime;
+      master.gain.cancelScheduledValues(now);
+      master.gain.setValueAtTime(master.gain.value, now);
+      master.gain.exponentialRampToValueAtTime(p ? 0.0001 : 0.05, now + 0.4);
+    } catch (_) {}
+  }
+
+  const synth = window.speechSynthesis || null;
+  let pickedVoice = null;
+  let voicesReady = false;
+
+  // Aggressively preload an audio file: fetch as blob, decode as object
+  // URL, wait for canplaythrough so the browser has the full waveform
+  // ready. Returns an Audio element guaranteed to play() with zero gap.
+  async function preloadAudio(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('preload ' + res.status + ' ' + url);
+    const blob = await res.blob();
+    const objUrl = URL.createObjectURL(blob);
+    const audio = new Audio();
+    audio.preload = 'auto';
+    audio.src = objUrl;
+    await new Promise((resolve, reject) => {
+      const onReady = () => { cleanup(); resolve(); };
+      const onErr   = () => { cleanup(); reject(new Error('audio decode failed')); };
+      function cleanup() {
+        audio.removeEventListener('canplaythrough', onReady);
+        audio.removeEventListener('error', onErr);
+      }
+      audio.addEventListener('canplaythrough', onReady, { once: true });
+      audio.addEventListener('error', onErr, { once: true });
+      // Some browsers won't emit canplaythrough without an explicit load()
+      audio.load();
+    });
+    return audio;
+  }
+
+  async function tryLoadElevenLabsManifest() {
+    try {
+      const res = await fetch('audio/narration/manifest.json', { cache: 'no-cache' });
+      if (!res.ok) return;
+      const manifest = await res.json();
+      if (!manifest || !Array.isArray(manifest.tracks) || !manifest.tracks.length) return;
+
+      const total = manifest.tracks.length;
+      let done = 0;
+      setLoadStatus(`Loading narration  0 / ${total}`);
+
+      // Preload all in parallel — each file is small (~50-100KB).
+      // We REQUIRE every track to reach canplaythrough before unlocking
+      // the play button. If any fails we'll surface it but still unlock
+      // (the queue's safety timer handles missing tracks gracefully).
+      let failed = 0;
+      const tasks = manifest.tracks.map(async (t) => {
+        try {
+          const audio = await preloadAudio('audio/narration/' + t.file);
+          audioCache[t.scene + '-' + t.t] = audio;
+        } catch (e) {
+          failed++;
+          console.warn('[demo] preload failed for', t.file, e);
+        } finally {
+          done++;
+          setLoadStatus(`Loading narration  ${done} / ${total}`);
+        }
+      });
+      await Promise.all(tasks);
+
+      mode = 'audio';
+      buildAudioQueue();
+      audioReady = true;
+      setLoadStatus(null);
+      console.log('[demo] Narration loaded —', total - failed, '/', total, 'tracks');
+    } catch (e) {
+      // 404 / network error → stick with Web Speech. No-op.
+      setLoadStatus(null);
+    }
+  }
+  // Tiny helper to surface preload progress on the play overlay so the
+  // user knows the demo is getting ready. Plain text, no spinner shenanigans.
+  function setLoadStatus(text) {
+    const big = document.getElementById('btn-play-big');
+    if (!big) return;
+    if (text) {
+      big.dataset.original = big.dataset.original || big.innerHTML;
+      big.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> ' + text;
+      big.disabled = true;
+      big.style.opacity = 0.7;
+      big.style.cursor = 'progress';
+    } else if (big.dataset.original) {
+      big.innerHTML = big.dataset.original;
+      big.disabled = false;
+      big.style.opacity = '';
+      big.style.cursor = '';
+    }
+  }
+  tryLoadElevenLabsManifest();
+
+  // Build the sequential queue from the TIMELINE narration arrays.
+  // Each entry pairs an MP3 with its matching caption text.
+  function buildAudioQueue() {
+    audioQueue = [];
+    for (const scene of T) {
+      for (const n of (scene.narration || [])) {
+        const key = scene.id + '-' + n.t;
+        if (!audioCache[key]) continue;
+        // Find the latest caption whose t is at-or-before this narration t
+        let captionText = '';
+        for (const c of (scene.caption || [])) {
+          if (c.t <= n.t + 200) captionText = c.text;
+        }
+        audioQueue.push({
+          sceneId: scene.id,
+          key,
+          audio:   audioCache[key],
+          caption: captionText,
+          label:   scene.label,
+        });
+      }
+    }
+    // After metadata loads, compute duration totals so the progress bar
+    // is accurate. If durations are NaN at this point, we recompute on
+    // every loadedmetadata event below.
+    function recomputeDurations() {
+      cumulativeDurations = [0];
+      totalAudioDuration = 0;
+      for (const item of audioQueue) {
+        const d = (item.audio && Number.isFinite(item.audio.duration)) ? item.audio.duration : 4;
+        totalAudioDuration += d;
+        cumulativeDurations.push(totalAudioDuration);
+      }
+    }
+    recomputeDurations();
+    audioQueue.forEach((item) => {
+      if (item.audio) item.audio.addEventListener('loadedmetadata', recomputeDurations, { once: true });
+    });
+  }
+
+  // Voice priority — DEEP MALE FIRST, in order of dramatic gravitas.
+  // Top priorities are the warmest, most authoritative neural male voices.
+  // We can't get actual Morgan Freeman in a browser API — that requires a
+  // custom-trained TTS or ElevenLabs. But these are the closest available
+  // off-the-shelf voices, and we slow them down + lower pitch for weight.
+  const VOICE_PREF = [
+    // Microsoft Edge "Online Natural" — neural, very high quality.
+    // Davis, Guy, Tony, Andrew, Brandon, Christopher, Eric are male US.
+    // Brian, Roger are also male variants.
+    /davis.*online.*natural/i,        // warm, mid-range US male — top pick
+    /tony.*online.*natural/i,         // older, gravitas
+    /guy.*online.*natural/i,
+    /andrew.*online.*natural/i,
+    /brandon.*online.*natural/i,
+    /christopher.*online.*natural/i,
+    /eric.*online.*natural/i,
+    /roger.*online.*natural/i,
+    /brian.*online.*natural/i,
+    // macOS premium male voices
+    /alex(?!a)/i,                     // macOS premium US male — excellent
+    /daniel(?!le)/i,                  // macOS premium British male — calm and authoritative
+    /fred/i,                          // macOS male, deeper
+    // Google (Chrome) male voices
+    /google.*uk english male/i,
+    /google.*english.*male/i,
+    // Generic Microsoft / SAPI fallbacks
+    /microsoft mark/i,                // SAPI Mark — Windows male
+    /microsoft david/i,                // SAPI David — Windows male, decent fallback
+    /microsoft george/i,
+    /microsoft james/i,
+  ];
+
+  // Names that are reliably female — we de-prioritize these unless the
+  // user explicitly picks one. Drama needs gravitas, not chirp.
+  const FEMALE_NAMES = /aria|jenny|libby|natasha|sonia|zira|hazel|susan|catherine|samantha|karen|tessa|veena|fiona|moira|ava|joanna|salli|kendra|ivy|kimberly|allison|emma|nora|amber|emily|elsa|claire/i;
+
+  function pickVoice() {
+    if (!synth) return null;
+    const voices = synth.getVoices();
+    if (!voices.length) return null;
+    const en = voices.filter(v => v.lang && v.lang.startsWith('en'));
+    const pool = en.length ? en : voices;
+    // Honor user override from localStorage
+    const saved = localStorage.getItem('laz-demo-voice');
+    if (saved) {
+      const m = pool.find(v => v.voiceURI === saved);
+      if (m) return m;
+    }
+    for (const re of VOICE_PREF) {
+      const v = pool.find(x => re.test(x.name));
+      if (v) return v;
+    }
+    // Fallback — prefer any voice NOT in the female-names list before
+    // accepting whatever is first.
+    const nonFemale = pool.find(x => !FEMALE_NAMES.test(x.name));
+    return nonFemale || pool[0];
+  }
+
+  function loadVoices() {
+    if (!synth) return;
+    pickedVoice = pickVoice();
+    if (pickedVoice) voicesReady = true;
+  }
+  if (synth) {
+    loadVoices();
+    synth.addEventListener?.('voiceschanged', loadVoices);
+    // Some browsers fire voiceschanged late — re-poll for ~3s
+    let polls = 0;
+    const pollVoices = setInterval(() => {
+      if (voicesReady || ++polls > 30) return clearInterval(pollVoices);
+      loadVoices();
+    }, 100);
+  }
+
+// Voice tuning — dialed for *gravitas*, not perky.
+  //   rate 0.84  → noticeably slower than default; gives words weight
+  //   pitch 0.92 → lowered slightly; warms up the voice and adds depth
+  // Per-utterance overrides are supported via the `tone` field on a line.
+  const TONE = {
+    default: { rate: 0.84, pitch: 0.92 },   // standard dramatic delivery
+    dark:    { rate: 0.80, pitch: 0.88 },   // problem / threat scenes
+    weight:  { rate: 0.78, pitch: 0.90 },   // single-line heavy beats
+    rise:    { rate: 0.88, pitch: 0.96 },   // hopeful / resolution scenes
+  };
+
+  // ─── AUDIO MODE: sequential queue playback ────────────────────────
+  // Each line plays in full before advancing. Caption shows when audio
+  // starts and persists until the next line begins. No collisions.
+
+  function setActiveScene(id) {
+    currentSceneId = id;
+    scenes.forEach(el => {
+      el.classList.toggle('active', parseInt(el.dataset.scene, 10) === id);
+    });
+    const scene = T.find(s => s.id === id);
+    if (scene) sceneIdEl.textContent = 'SCENE ' + scene.label;
+    sceneStartedAt = performance.now();
+  }
+
+  function clearAdvanceTimer() {
+    if (advanceTimer) { clearTimeout(advanceTimer); advanceTimer = 0; }
+  }
+
+  function playQueueFromIdx() {
+    clearTimeout(loopTimer);
+    clearAdvanceTimer();
+
+    if (queueIdx >= audioQueue.length) {
+      // End-of-demo. Hold for 2 seconds then loop back to the top.
+      loopTimer = setTimeout(() => {
+        if (mode === 'audio' && started && !paused) {
+          queueIdx = 0;
+          playQueueFromIdx();
+        }
+      }, 2000);
+      return;
+    }
+
+    const item = audioQueue[queueIdx];
+
+    // Visual transition
+    if (item.sceneId !== currentSceneId) setActiveScene(item.sceneId);
+
+    // Caption — bound directly to the audio that's about to play
+    setCaption(item.caption);
+
+    // Helper: advance to next item, with anti-double-fire guard
+    let advanced = false;
+    const advance = () => {
+      if (advanced) return;
+      advanced = true;
+      clearAdvanceTimer();
+      if (!paused && mode === 'audio') {
+        queueIdx++;
+        playQueueFromIdx();
+      }
+    };
+
+    // Muted: simulate playback timing via setTimeout
+    if (muted) {
+      const dur = (item.audio && Number.isFinite(item.audio.duration)) ? item.audio.duration : 4;
+      advanceTimer = setTimeout(advance, dur * 1000);
+      return;
+    }
+
+    // Audio playback
+    const a = item.audio;
+    if (!a) {
+      // Missing — skip immediately
+      console.warn('[demo] missing audio for', item.key);
+      return advance();
+    }
+    try { a.currentTime = 0; } catch (_) {}
+    a.onended = advance;
+    a.onerror = () => {
+      console.warn('[demo] audio error on', item.key);
+      advance();
+    };
+    activeAudio = a;
+
+    // Safety net: if onended doesn't fire (some browsers / corrupt mp3s),
+    // force-advance after the audio's expected duration plus a 2.5s grace.
+    // No more silent 40-second stalls.
+    const expectedMs = ((Number.isFinite(a.duration) ? a.duration : 5) * 1000) + 2500;
+    advanceTimer = setTimeout(() => {
+      console.warn('[demo] safety timeout fired for', item.key, '— force-advancing');
+      advance();
+    }, expectedMs);
+
+    a.play().catch((err) => {
+      console.warn('[demo] play() rejected for', item.key, err && err.name);
+      // Autoplay blocked or race — try once more, then fall through
+      setTimeout(() => {
+        a.play().catch(() => advance());
+      }, 200);
+    });
+  }
+
+  // ─── SPEECH MODE: legacy time-driven Web Speech narration ─────────
+  function speak(text, tone) {
+    if (!synth || muted || !text) return;
+    const cfg = TONE[tone] || TONE.default;
+    const clauses = text
+      .split(/\s*…\s*|\s*—\s*|(?<=[.!?])\s+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+    clauses.forEach((c) => {
+      const u = new SpeechSynthesisUtterance(c);
+      if (pickedVoice) u.voice = pickedVoice;
+      u.rate = cfg.rate;
+      u.pitch = cfg.pitch;
+      u.volume = 1.0;
+      try { synth.speak(u); } catch (e) { /* no-op */ }
+    });
+  }
+
+  function cancelSpeech() {
+    clearTimeout(loopTimer);
+    if (synth) try { synth.cancel(); } catch (e) {}
+    if (activeAudio) {
+      try { activeAudio.pause(); activeAudio.currentTime = 0; activeAudio.onended = null; activeAudio.onerror = null; } catch (e) {}
+      activeAudio = null;
+    }
+    for (const k in audioCache) {
+      try { audioCache[k].pause(); audioCache[k].currentTime = 0; audioCache[k].onended = null; audioCache[k].onerror = null; } catch (e) {}
+    }
+  }
+
+  function fmtTime(ms) {
+    const total = Math.floor(ms / 1000);
+    const m = Math.floor(total / 60).toString().padStart(2, '0');
+    const s = (total % 60).toString().padStart(2, '0');
+    return m + ':' + s;
+  }
+
+  function tick(now) {
+    if (lastTick === 0) lastTick = now;
+    const dt = paused ? 0 : (now - lastTick);
+    lastTick = now;
+
+    if (mode === 'speech') {
+      // Time-driven model
+      elapsed = Math.min(TOTAL, elapsed + dt);
+      updateSpeech();
+      if (elapsed >= TOTAL) {
+        setTimeout(() => { elapsed = 0; spokenKeys.clear(); }, 2000);
+      }
+    } else {
+      // Audio-driven model — only progress + scene effects use rAF
+      updateAudio();
+    }
+
+    raf = requestAnimationFrame(tick);
+  }
+
+  function updateSpeech() {
+    progressEl.style.width = ((elapsed / TOTAL) * 100) + '%';
+    timecodeEl.textContent = fmtTime(elapsed) + ' / ' + fmtTime(TOTAL);
+
+    const active = T.find(s => elapsed >= s.t0 && elapsed < s.t1) || T[T.length - 1];
+    scenes.forEach((el, i) => {
+      el.classList.toggle('active', (i + 1) === active.id);
+    });
+    sceneIdEl.textContent = 'SCENE ' + active.label;
+
+    const tInScene = elapsed - active.t0;
+    let cap = '';
+    for (const c of active.caption) {
+      if (tInScene >= c.t) cap = c.text;
+    }
+    setCaption(cap);
+
+    if (started && !muted && synth) {
+      for (const n of (active.narration || [])) {
+        const key = active.id + '-' + n.t;
+        if (!spokenKeys.has(key) && tInScene >= n.t) {
+          spokenKeys.add(key);
+          speak(n.text, n.tone);
+        }
+      }
+    }
+
+    sceneEffects(active.id, tInScene);
+  }
+
+  function updateAudio() {
+    // Progress = completed-line durations + currently-playing audio time
+    const baseSec = cumulativeDurations[queueIdx] || 0;
+    const liveSec = (activeAudio && Number.isFinite(activeAudio.currentTime)) ? activeAudio.currentTime : 0;
+    const playedSec = baseSec + liveSec;
+    const totalSec = totalAudioDuration || 90;
+    progressEl.style.width = Math.min(100, (playedSec / totalSec) * 100) + '%';
+    timecodeEl.textContent = fmtTime(playedSec * 1000) + ' / ' + fmtTime(totalSec * 1000);
+
+    // Per-scene effects driven by wallclock time since the scene became active
+    const tInScene = performance.now() - sceneStartedAt;
+    sceneEffects(currentSceneId, tInScene);
+  }
+
+  // Back-compat alias — older code may call update()
+  function update() {
+    if (mode === 'speech') updateSpeech();
+    else updateAudio();
+  }
+
+  let lastCap = '';
+  function setCaption(text) {
+    if (text === lastCap) return;
+    lastCap = text;
+    captionEl.classList.remove('in');
+    setTimeout(() => {
+      captionEl.innerHTML = text || '&nbsp;';
+      requestAnimationFrame(() => captionEl.classList.add('in'));
+    }, 280);
+  }
+
+  // ── Scene-specific effects ────────────────────────────────────────
+  function sceneEffects(id, t) {
+    cursorEl.style.opacity = 0;
+    cursorEl.classList.remove('click');
+
+    if (id === 4) effectScene4(t);
+    else if (id === 5) effectScene5(t);
+    else if (id === 6) effectScene6(t);
+    else if (id === 7) effectScene7(t);
+    else if (id === 8) effectScene8(t);
+  }
+
+  // Scene 4 — animate cursor over dashboard sidebar items
+  function effectScene4(t) {
+    cursorEl.style.opacity = (t > 1500 && t < 12000) ? 1 : 0;
+    if (t > 1500 && t < 4500) moveCursor(60, 38);    // sidebar
+    else if (t > 4500 && t < 8000) moveCursor(80, 50);  // score
+    else if (t > 8000 && t < 12000) moveCursor(60, 70); // network
+  }
+
+  // Scene 5 — score animation 100 → 95 → 70 → 45, petition slides in
+  function effectScene5(t) {
+    const num = $('#s5-num');
+    const state = $('#s5-state');
+    const bigCard = $('#s5-score');
+    const petition = $('#s5-petition');
+    const baseline = $('.s5-score-baseline');
+
+    if (!num || !bigCard || !petition || !baseline) return;
+
+    const sb = baseline.children;
+
+    // Score schedule
+    let val = 100, label = 'ALL SYSTEMS QUIET', mode = '';
+    let days = '0d silent';
+    if (t < 2500)        { val = 100; label = 'ALL SYSTEMS QUIET'; mode = ''; days = '0d silent'; }
+    else if (t < 4500)   { val = 95;  label = 'ACTIVE'; mode = ''; days = '3d silent'; }
+    else if (t < 6500)   { val = 85;  label = 'ACTIVE'; mode = ''; days = '7d silent'; }
+    else if (t < 8500)   { val = 70;  label = 'WATCHING'; mode = 'warn'; days = '14d silent'; }
+    else if (t < 10500)  { val = 55;  label = 'ESCALATING'; mode = 'warn'; days = '21d silent'; }
+    else if (t < 12500)  { val = 45;  label = 'PETITION ELIGIBLE'; mode = 'bad'; days = '30d silent'; }
+    else                 { val = 45;  label = 'PETITION OPEN'; mode = 'bad'; days = '32d silent'; }
+    num.textContent = val;
+    state.textContent = label;
+    bigCard.classList.toggle('warn', mode === 'warn');
+    bigCard.classList.toggle('bad',  mode === 'bad');
+    if (sb && sb.length === 2) sb[0].textContent = days;
+
+    petition.classList.toggle('in', t > 11000);
+
+    cursorEl.style.opacity = 0;
+  }
+
+  // Scene 6 — light up steps in sequence
+  function effectScene6(t) {
+    const steps = document.querySelectorAll('#s6-flow .s6-step');
+    // 5 steps over ~12s — about 2.4s each, with a brief overlap
+    const order = [0, 1, 2, 3, 4];
+    const dwell = 2400;
+    const litIdx = Math.min(4, Math.max(-1, Math.floor((t - 1500) / dwell)));
+    steps.forEach((el, i) => {
+      el.classList.toggle('lit', i === litIdx);
+      el.classList.toggle('completed', i < litIdx);
+    });
+    cursorEl.style.opacity = 0;
+  }
+
+  // Scene 7 — arm the duress button at ~3s
+  function effectScene7(t) {
+    const btn = $('#s7-button');
+    const status = $('#s7-status');
+    const sceneEl = document.querySelector('.scene-7');
+    if (!btn || !status || !sceneEl) return;
+
+    const armed = t > 3000;
+    btn.classList.toggle('armed', armed);
+    sceneEl.classList.toggle('armed', armed);
+    status.textContent = armed
+      ? 'UNDER DURESS · 2 WATCHERS NEEDED TO CANCEL'
+      : 'NORMAL OPERATION';
+
+    if (t > 1000 && t < 3500) {
+      cursorEl.style.opacity = 1;
+      moveCursor(50, 50);
+      cursorEl.classList.toggle('click', t > 2700 && t < 3400);
+    } else {
+      cursorEl.style.opacity = 0;
+    }
+  }
+
+  // Scene 8 — invariants slide in one by one
+  function effectScene8(t) {
+    const invs = document.querySelectorAll('.s8-inv');
+    invs.forEach((el, i) => {
+      const tIn = 4500 + i * 500;
+      el.classList.toggle('in', t > tIn);
+    });
+    cursorEl.style.opacity = 0;
+  }
+
+  // ── Virtual cursor ────────────────────────────────────────────────
+  // Coordinates are in viewport-percentage of the demo frame, so it
+  // scales correctly regardless of window size.
+  function moveCursor(xPct, yPct) {
+    const frame = $('#frame');
+    const rect = frame.getBoundingClientRect();
+    const x = rect.left + (rect.width  * xPct / 100);
+    const y = rect.top  + (rect.height * yPct / 100);
+    cursorEl.style.transform = `translate(${x}px, ${y}px)`;
+  }
+
+  // ── Controls ──────────────────────────────────────────────────────
+  function setMuted(v) {
+    muted = v;
+    btnMute.classList.toggle('muted', muted);
+    iconSound.style.display = muted ? 'none' : '';
+    iconMuted.style.display = muted ? '' : 'none';
+    if (muted) {
+      stopAmbience();
+      if (synth) try { synth.cancel(); } catch (e) {}
+      if (activeAudio) try { activeAudio.pause(); activeAudio.currentTime = 0; activeAudio.onended = null; } catch (e) {}
+      activeAudio = null;
+      clearAdvanceTimer();
+      if (mode === 'audio' && started && !paused) {
+        // Re-enter the queue at the current index in muted mode
+        playQueueFromIdx();
+      }
+    } else {
+      // Unmuting mid-demo: bring the bed back
+      if (started) startAmbience();
+    }
+  }
+
+  btnPlay.addEventListener('click', () => {
+    if (!started) { begin(false); return; }
+    paused = !paused;
+    iconPlay.style.display = paused ? '' : 'none';
+    iconPause.style.display = paused ? 'none' : '';
+    if (!paused) lastTick = 0;
+    pauseAmbience(paused);
+    if (paused) {
+      if (synth) try { synth.pause(); } catch(e){}
+      if (activeAudio) try { activeAudio.pause(); } catch(e){}
+      clearTimeout(loopTimer);
+      clearAdvanceTimer();
+    } else {
+      if (mode === 'audio') {
+        if (activeAudio && activeAudio.paused) {
+          activeAudio.play().catch(() => playQueueFromIdx());
+        } else if (!activeAudio) {
+          playQueueFromIdx();
+        }
+      } else {
+        if (synth) try { synth.resume(); } catch(e){}
+      }
+    }
+  });
+
+  btnRestart.addEventListener('click', () => {
+    elapsed = 0;
+    spokenKeys.clear();
+    cancelSpeech();
+    clearAdvanceTimer();
+    if (mode === 'audio') {
+      queueIdx = 0;
+      setActiveScene(1);
+      if (!paused) playQueueFromIdx();
+    }
+    if (paused) {
+      paused = false;
+      iconPlay.style.display = 'none';
+      iconPause.style.display = '';
+      lastTick = 0;
+      pauseAmbience(false);
+    }
+  });
+
+  btnMute.addEventListener('click', () => setMuted(!muted));
+
+  // ── Page lifecycle: pause when tab is hidden, resume on return
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (synth) try { synth.pause(); } catch(e){}
+      if (activeAudio) try { activeAudio.pause(); } catch(e){}
+      clearTimeout(loopTimer);
+      clearAdvanceTimer();
+      pauseAmbience(true);
+    } else if (started && !paused) {
+      pauseAmbience(false);
+      if (mode === 'audio') {
+        if (activeAudio && !muted) activeAudio.play().catch(() => {});
+      } else if (!muted && synth) {
+        try { synth.resume(); } catch(e){}
+      }
+    }
+  });
+
+  // ── Autoplay-safe boot ────────────────────────────────────────────
+  // Browsers block speechSynthesis until a user gesture — the overlay
+  // gate guarantees we always have one before trying to speak.
+  function begin(silent) {
+    if (started) return;
+    // Hard gate — never start if audio mode hasn't finished preloading.
+    // Without this guard, the demo could play visuals while waiting for
+    // the first MP3 → silent gap.
+    if (mode === 'audio' && !audioReady) {
+      console.warn('[demo] begin blocked — audio not ready yet');
+      return;
+    }
+    started = true;
+    paused = false;
+    muted = !!silent;
+    btnMute.classList.toggle('muted', muted);
+    iconSound.style.display = muted ? 'none' : '';
+    iconMuted.style.display = muted ? '' : 'none';
+    overlay.classList.add('hidden');
+    iconPlay.style.display = 'none';
+    iconPause.style.display = '';
+    lastTick = 0;
+
+    if (!muted) startAmbience();
+
+    if (mode === 'audio') {
+      queueIdx = 0;
+      setActiveScene(1);
+      playQueueFromIdx();
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  btnPlayBig.addEventListener('click', () => {
+    if (mode === 'audio' && !audioReady) return; // hard gate
+    begin(false);
+  });
+  btnPlaySilent.addEventListener('click', () => begin(true));
+
+  // Keyboard — space to pause/play, R to restart, M to mute
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); btnPlay.click(); }
+    if (e.code === 'KeyR')  btnRestart.click();
+    if (e.code === 'KeyM')  setMuted(!muted);
+  });
+
+  // ── First-paint draw (so the empty stage doesn't look broken) ─────
+  update();
+})();
+</script>
+
+</body>
+</html>
