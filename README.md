@@ -10,7 +10,7 @@
 
 ## Links
 
-- 🎬 **90-second walkthrough:** open [`demo.html`](./demo.html) — self-running cinematic product demo with captions and animated UI, no install required. Use [`DEMO.md`](./DEMO.md) when you record the actual MP4 for submission.
+- 🎬 **90-second walkthrough:** open [`demo.html`](./demo.html) — self-running cinematic product demo with captions and animated UI, no install required. 
 - 🌐 **Live demo:** deploy in ~30 minutes via [`DEPLOYMENT.md`](./DEPLOYMENT.md) (Vercel + Base Sepolia). Until deployed, the dashboard runs in simulation mode using local seed data — every UI flow is exercisable, but on-chain reads are mocked.
 - 📖 **Documentation:** [`docs.html`](./docs.html) — invariants, roles, petition lifecycle, security guarantees, contract reference
 - 🛡️ **Threat model:** [`THREATS.md`](./THREATS.md) — STRIDE-style adversary catalogue mapped to contract code, including coercion / kidnap defense
